@@ -1,0 +1,67 @@
+<?php
+
+namespace App\Livewire\Product;
+
+use App\Models\Cart;
+use App\Models\Favorite;
+use App\Models\Product;
+use App\Models\ProductVariant;
+use Illuminate\View\View;
+use Livewire\Component;
+use WireUi\Traits\Actions;
+
+class VariantCard extends Component
+{
+    use Actions;
+
+    public ProductVariant $variant;
+    public Product $product;
+    public $lang;
+    public int $quantity = 1;
+    public bool $favorite;
+
+    public function mount(): void
+    {
+        $this->product = Product::find($this->variant->product_id);
+        $this->lang = app()->getLocale();
+        $this->favorite = auth()->id() && Favorite::where([
+                'product_variant_id' => $this->variant->id,
+                'customer_id' => auth()->id()
+            ])->exists();
+    }
+
+    public function render(): View
+    {
+        return view('livewire.product.variant-card');
+    }
+
+    public function addToCart(): void
+    {
+        $customer = auth()->id() ?? session()->getId();
+        Cart::create([
+            'customer_id' => $customer,
+            'product_id' => $this->product->id,
+            'variant_id' => $this->variant->id,
+            'quantity' => $this->quantity,
+        ]);
+        $this->notification()->success("Dodano do koszyka", "Produkt dodano do koszyka!");
+    }
+
+    public function toggleFavorite(): void
+    {
+        $fav = Favorite::where([
+            'product_variant_id' => $this->variant->id,
+            'customer_id' => auth()->id()
+        ]);
+        if ($fav->exists()) {
+            $fav->forceDelete();
+            $this->favorite = false;
+        } else {
+            Favorite::create([
+                'product_variant_id' => $this->variant->id,
+                'customer_id' => auth()->id()
+            ])->save();
+            $this->favorite = true;
+        }
+    }
+}
