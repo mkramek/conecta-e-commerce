@@ -23,9 +23,9 @@ class Categories extends Component
     {
         $this->lang = app()->getLocale();
         $this->mode = $mode;
-        $this->primary_categories = FirstLevelCategory::all();
-        $this->secondary_categories = SecondLevelCategory::all();
-        $this->tertiary_categories = ThirdLevelCategory::all();
+        $this->primary_categories = FirstLevelCategory::orderBy('position')->get();
+        $this->secondary_categories = SecondLevelCategory::orderBy('position')->get();
+        $this->tertiary_categories = ThirdLevelCategory::orderBy('position')->get();
     }
 
     public function render(): View
