@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class FileAttachment extends Model
 {
@@ -25,6 +23,6 @@ class FileAttachment extends Model
         'file_name',
         'file_extension',
         'file_size',
-        'url'
+        'url',
     ];
 }

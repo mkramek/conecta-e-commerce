@@ -18,7 +18,8 @@ class Size extends Model
      */
     protected $fillable = [
         'size_value',
-        'size_group_id'
+        'size_group_id',
+        'position',
     ];
 
     public function sizeGroup(): BelongsTo

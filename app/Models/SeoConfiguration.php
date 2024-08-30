@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class SeoConfiguration extends Model
 {
-    use HasUuids;
     use HasFactory;
+    use HasUuids;
 
     /**
      * meta_title => Tytuł strony w platformie E-Commerce
@@ -17,6 +17,7 @@ class SeoConfiguration extends Model
      * meta_description_content => Opis strony w platformie E-Commerce
      * meta_keywords => Słowa kluczowe rozdzielone przecinkiem
      * lang => Język w jakim ma być dodane SEO
+     *
      * @var string[]
      */
     protected $fillable = [
@@ -24,6 +25,6 @@ class SeoConfiguration extends Model
         'meta_author',
         'meta_description_content',
         'meta_keywords',
-        'lang'
+        'lang',
     ];
 }

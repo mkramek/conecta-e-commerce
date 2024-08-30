@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -12,6 +12,17 @@ class FirstLevelCategory extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
+    /**
+     * Rzutowanie pól na wspazany typ zmiennych.
+     *
+     * @var string[]
+     */
+    public $casts = [
+        'has_second_level_categories' => 'boolean',
+        'has_active_promotion' => 'boolean',
+        'display_in_menu' => 'boolean',
+    ];
 
     /**
      * name_pl => nazwa w języku PL
@@ -42,18 +53,9 @@ class FirstLevelCategory extends Model
         'has_second_level_categories',
         'has_active_promotion',
         'position',
-        'display_in_menu'
-    ];
-
-    /**
-     * Rzutowanie pól na wspazany typ zmiennych.
-     *
-     * @var string[]
-     */
-    public $casts = [
-        'has_second_level_categories' => 'boolean',
-        'has_active_promotion' => 'boolean',
-        'display_in_menu' => 'boolean'
+        'display_in_menu',
+        'size_group_id',
+        'icon',
     ];
 
     public function secondLevelCategories(): HasMany
@@ -65,5 +67,10 @@ class FirstLevelCategory extends Model
     {
         // Tabela w bazie danych: first_level_category_product
         return $this->hasMany(Product::class);
+    }
+
+    public function sizeGroup(): BelongsTo
+    {
+        return $this->belongsTo(SizeGroup::class, 'size_group_id');
     }
 }

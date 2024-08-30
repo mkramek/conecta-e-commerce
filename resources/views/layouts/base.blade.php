@@ -32,6 +32,9 @@
 <body>
 <x-notifications/>
 <x-dialog z-index="z-50" blur="md" align="center"/>
+@if(Request::path() === app()->getLocale())
+    <livewire:carousel/>
+@endif
 <livewire:header/>
 @yield('body')
 <livewire:footer/>

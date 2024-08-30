@@ -29,39 +29,42 @@
             Pokaż przedmiot
         </x-button>
         <div class="flex items-stretch justify-center w-full gap-2">
-            @if(auth()->id() && $favorite)
-                <x-button outline class="mt-2 basis-1/4"
+            @if(auth()->check() && $favorite)
+                <x-button outline class="w-full mt-2 basis-full"
                           wire:click="toggleFavorite">
                     <x-icon name="heart" class="w-6" solid color="primary"/>
+                    <span>Usuń z ulubionych</span>
                 </x-button>
-            @elseif(!$favorite)
-                <x-button outline class="mt-2 basis-1/4"
+            @elseif(auth()->check() && !$favorite)
+                <x-button outline class="w-full mt-2 basis-full"
                           wire:click="toggleFavorite">
                     <x-icon name="heart" class="w-6" outline/>
+                    <span>Dodaj do ulubionych</span>
                 </x-button>
             @else
-                <x-button outline class="mt-2 basis-1/4"
+                <x-button disabled outline class="w-full mt-2 basis-full"
                           href='{{ route("login.$lang") }}'>
                     <x-icon name="heart" class="w-6" outline/>
+                    <span>Zaloguj się, by dodać do ulubionych</span>
                 </x-button>
             @endif
-            @if($variant->quantity > 1)
-                <x-button primary class="mt-2 basis-1/4"
-                          wire:click="addToCart">
-                    <x-icon name="shopping-cart" solid class="w-6"/>
-                </x-button>
-            @else
-                <x-button disabled slate class="mt-2 basis-1/2"
-                          wire:click="addToCart">
-                    <x-icon name="shopping-cart" solid class="w-6"/>
-                </x-button>
-            @endif
-            <div class="flex items-center mt-2 basis-1/2">
-                <x-inputs.number id="product-quantity-{{ $variant->id }}"
-                                 wire:model="quantity" min="0"
-                                 value="0"
-                                 max="{{ $variant->quantity }}"></x-inputs.number>
-            </div>
+{{--            @if($variant->quantity > 1)--}}
+{{--                <x-button primary class="mt-2 basis-1/4"--}}
+{{--                          wire:click="addToCart">--}}
+{{--                    <x-icon name="shopping-cart" solid class="w-6"/>--}}
+{{--                </x-button>--}}
+{{--            @else--}}
+{{--                <x-button disabled slate class="mt-2 basis-1/2"--}}
+{{--                          wire:click="addToCart">--}}
+{{--                    <x-icon name="shopping-cart" solid class="w-6"/>--}}
+{{--                </x-button>--}}
+{{--            @endif--}}
+{{--            <div class="flex items-center mt-2 basis-1/2">--}}
+{{--                <x-inputs.number id="product-quantity-{{ $variant->id }}"--}}
+{{--                                 wire:model="quantity" min="0"--}}
+{{--                                 value="0"--}}
+{{--                                 max="{{ $variant->quantity }}"></x-inputs.number>--}}
+{{--            </div>--}}
         </div>
     </div>
 </div>

@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InvoiceRegisterAddress extends Model
 {
-    use HasUuids;
     use HasFactory;
+    use HasUuids;
     use SoftDeletes;
 
     /**
@@ -36,7 +36,7 @@ class InvoiceRegisterAddress extends Model
         'postal_code',
         'client_e_commerce_id',
         'province',
-        'country'
+        'country',
     ];
 
     public function clientECommerce(): BelongsTo

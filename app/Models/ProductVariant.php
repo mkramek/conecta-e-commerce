@@ -62,11 +62,11 @@ class ProductVariant extends Model
         'brutto_price',
         'mark_up',
         'netto_discount_price',
-        'brutto_discount_price'
+        'brutto_discount_price',
     ];
 
     protected $casts = [
-        'has_new_price_from_sync' => 'boolean'
+        'has_new_price_from_sync' => 'boolean',
     ];
 
     public function product(): BelongsTo
@@ -102,5 +102,10 @@ class ProductVariant extends Model
     public function carts(): HasMany
     {
         return $this->hasMany(Cart::class);
+    }
+
+    public function priceHistory(): HasMany
+    {
+        return $this->hasMany(PriceHistory::class, 'product_variant_id');
     }
 }

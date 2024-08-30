@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 // Produkt bazowy
 class Product extends Model
@@ -41,7 +40,7 @@ class Product extends Model
         'slug_en',
         'producer',
         'model',
-        'has_discount'
+        'has_discount',
     ];
 
     /**
@@ -51,7 +50,7 @@ class Product extends Model
      */
     protected $casts = [
         'has_discount' => 'boolean',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
     ];
 
     public function variants(): HasMany
@@ -84,7 +83,7 @@ class Product extends Model
 
     public function synchronizerProduct(): BelongsTo
     {
-        return $this->belongsTo(SynchronizerProduct::class);
+        return $this->belongsTo(SynchronizerProduct::class, 'synchronizer_product_id', 'product_id');
     }
 
     public function images(): HasMany

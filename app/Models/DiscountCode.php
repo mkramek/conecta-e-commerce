@@ -2,15 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Kod promocyjny ma zadziałać na każdy produkt w zamówieniu.
  */
-
 class DiscountCode extends Model
 {
     use HasFactory;
@@ -42,14 +41,14 @@ class DiscountCode extends Model
         'used_times',
         'is_active',
         'use_with_basket',
-        'use_with_products'
+        'use_with_products',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'use_for_basket' => 'boolean',
         'use_for_products' => 'boolean',
-        'is_unlimited' => 'boolean'
+        'is_unlimited' => 'boolean',
     ];
 
     public function productsVariants(): BelongsToMany

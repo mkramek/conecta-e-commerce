@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -13,6 +12,16 @@ class ThirdLevelCategory extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
+    /**
+     * Rzutowanie pól na wspazany typ zmiennych.
+     *
+     * @var string[]
+     */
+    public $casts = [
+        'has_active_promotion' => 'boolean',
+        'display_in_menu' => 'boolean',
+    ];
 
     /**
      * second_level_category_id => ID kategorii drugiego poziomu
@@ -43,17 +52,8 @@ class ThirdLevelCategory extends Model
         'keywords_en',
         'has_active_promotion',
         'position',
-        'display_in_menu'
-    ];
-
-    /**
-     * Rzutowanie pól na wspazany typ zmiennych.
-     *
-     * @var string[]
-     */
-    public $casts = [
-        'has_active_promotion' => 'boolean',
-        'display_in_menu' => 'boolean'
+        'display_in_menu',
+        'size_group_id',
     ];
 
     public function secondLevelCategory(): BelongsTo
@@ -65,5 +65,10 @@ class ThirdLevelCategory extends Model
     {
         // Tabela w bazie danych: product_third_level_category
         return $this->hasMany(Product::class);
+    }
+
+    public function sizeGroup(): BelongsTo
+    {
+        return $this->belongsTo(SizeGroup::class, 'size_group_id');
     }
 }

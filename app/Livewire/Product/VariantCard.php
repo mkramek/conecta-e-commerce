@@ -22,12 +22,9 @@ class VariantCard extends Component
 
     public function mount(): void
     {
-        $this->product = Product::find($this->variant->product_id);
+        $this->variant = $this->product->variants->first();
         $this->lang = app()->getLocale();
-        $this->favorite = auth()->id() && Favorite::where([
-                'product_variant_id' => $this->variant->id,
-                'customer_id' => auth()->id()
-            ])->exists();
+        $this->favorite = auth()->id() && Favorite::where(['product_variant_id' => $this->variant->id, 'customer_id' => auth()->id()])->exists();
     }
 
     public function render(): View
@@ -38,29 +35,18 @@ class VariantCard extends Component
     public function addToCart(): void
     {
         $customer = auth()->id() ?? session()->getId();
-        Cart::create([
-            'customer_id' => $customer,
-            'product_id' => $this->product->id,
-            'variant_id' => $this->variant->id,
-            'quantity' => $this->quantity,
-        ]);
+        Cart::create(['customer_id' => $customer, 'product_id' => $this->product->id, 'variant_id' => $this->variant->id, 'quantity' => $this->quantity,]);
         $this->notification()->success("Dodano do koszyka", "Produkt dodano do koszyka!");
     }
 
     public function toggleFavorite(): void
     {
-        $fav = Favorite::where([
-            'product_variant_id' => $this->variant->id,
-            'customer_id' => auth()->id()
-        ]);
+        $fav = Favorite::where(['product_variant_id' => $this->variant->id, 'customer_id' => auth()->id()]);
         if ($fav->exists()) {
             $fav->forceDelete();
             $this->favorite = false;
         } else {
-            Favorite::create([
-                'product_variant_id' => $this->variant->id,
-                'customer_id' => auth()->id()
-            ])->save();
+            Favorite::create(['product_variant_id' => $this->variant->id, 'customer_id' => auth()->id()])->save();
             $this->favorite = true;
         }
     }

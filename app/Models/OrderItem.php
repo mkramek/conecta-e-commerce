@@ -15,7 +15,7 @@ class OrderItem extends Model
         'total_gross',
         'has_discount',
         'total_discount_net',
-        'total_discount_gross'
+        'total_discount_gross',
     ];
 
     protected $casts = [
@@ -24,7 +24,7 @@ class OrderItem extends Model
 
     public function variant(): BelongsTo
     {
-        return $this->belongsTo(ProductVariant::class);
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
 
     public function order(): BelongsTo

@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Order extends Model
 {
     public $incrementing = false;
-    protected $keyType = "string";
+
+    protected $keyType = 'string';
 
     protected $fillable = [
         'id',
@@ -32,7 +33,7 @@ class Order extends Model
 
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(ClientECommerce::class, "user_id");
+        return $this->belongsTo(ClientECommerce::class, 'user_id');
     }
 
     public function product()
@@ -53,5 +54,24 @@ class Order extends Model
     public function courier(): BelongsTo
     {
         return $this->belongsTo(Courier::class, 'courier_id');
+    }
+
+    public function paymentMethod(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method_id');
+    }
+
+    public function getStatus()
+    {
+        switch ($this->status) {
+            case 'pending':
+                return 'Oczekujące';
+            case 'processing':
+                return 'Przetwarzane';
+            case 'shipped':
+                return 'Wysłane';
+            case 'delivered':
+                return 'Dostarczone';
+        }
     }
 }

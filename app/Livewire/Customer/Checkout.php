@@ -12,7 +12,10 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PaymentMethod;
 use App\Services\OpenPayUService;
+use App\Services\SymfoniaService;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\View\View;
 use Livewire\Component;
 use WireUi\Traits\Actions;
@@ -22,41 +25,8 @@ class Checkout extends Component
     use Actions;
 
     public $lang;
-    public $address_form = [
-        'document' => 'no_invoice',
-        'nip' => '',
-        'company_name' => '',
-        'first_name' => '',
-        'last_name' => '',
-        'telephone_prefix' => '',
-        'telephone_number' => '',
-        'email' => '',
-        'street' => '',
-        'house_number' => '',
-        'apartment_number' => '',
-        'postal_code' => '',
-        'city' => '',
-        'province' => '',
-        'country' => '',
-    ];
-    public $delivery_form = [
-        'document' => 'no_invoice',
-        'duplicate' => true,
-        'nip' => '',
-        'company_name' => '',
-        'first_name' => '',
-        'last_name' => '',
-        'telephone_prefix' => '',
-        'telephone_number' => '',
-        'email' => '',
-        'street' => '',
-        'house_number' => '',
-        'apartment_number' => '',
-        'postal_code' => '',
-        'city' => '',
-        'province' => '',
-        'country' => '',
-    ];
+    public $address_form = ['document' => 'no_invoice', 'nip' => '', 'company_name' => '', 'first_name' => '', 'last_name' => '', 'telephone_prefix' => '', 'telephone_number' => '', 'email' => '', 'street' => '', 'house_number' => '', 'apartment_number' => '', 'postal_code' => '', 'city' => '', 'province' => '', 'country' => '',];
+    public $delivery_form = ['document' => 'no_invoice', 'duplicate' => true, 'nip' => '', 'company_name' => '', 'first_name' => '', 'last_name' => '', 'telephone_prefix' => '', 'telephone_number' => '', 'email' => '', 'street' => '', 'house_number' => '', 'apartment_number' => '', 'postal_code' => '', 'city' => '', 'province' => '', 'country' => '',];
     public $courier;
     public $payment_method;
     public Collection $couriers;
@@ -72,12 +42,7 @@ class Checkout extends Component
 
     public function rules()
     {
-        return [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'telephone_prefix' => 'required',
-            'telephone_number' => 'required',
-        ];
+        return ['first_name' => 'required', 'last_name' => 'required', 'telephone_prefix' => 'required', 'telephone_number' => 'required',];
     }
 
     public function mount(): void
@@ -88,32 +53,6 @@ class Checkout extends Component
         $this->nameColumn = "name_{$this->lang}";
         $this->items = Cart::where('customer_id', auth()->id() ?? session()->getId())->get();
         $this->total_amount = $this->getTotal();
-    }
-
-    public function render(): View
-    {
-        return view('livewire.customer.checkout');
-    }
-
-    public function applyPromoCode(): void
-    {
-        $code = DiscountCode::where([
-            'code' => $this->discount_code,
-            'is_active' => true,
-        ])->first();
-        if ($code && $code->exists()) {
-            $this->discount_code_id = $code->id;
-            $this->total_amount = $this->getTotal("brutto");
-            $this->notification()->success(
-                title: __('Sukces'),
-                description: __('Wprowadzono poprawny kod promocyjny!')
-            );
-        } else {
-            $this->notification()->error(
-                title: __('Błąd'),
-                description: __('Wprowadzono nieprawidłowy kod promocyjny')
-            );
-        }
     }
 
     public function getTotal($with_discounts = true): string
@@ -136,54 +75,90 @@ class Checkout extends Component
         return number_format($total, 2);
     }
 
-    public function handleOrder()
+    public function render(): View
     {
-        if (!auth()->id()) {
-            $customer = ClientECommerce::create([
-                'email' => $this->address_form['email'],
-                'first_name' => $this->address_form['first_name'],
-                'last_name' => $this->address_form['last_name'],
-                'login' => uniqid('customer_', true),
+        return view('livewire.customer.checkout');
+    }
+
+    public function applyPromoCode(): void
+    {
+        $code = DiscountCode::where(['code' => $this->discount_code, 'is_active' => true,])->first();
+        if ($code && $code->exists()) {
+            $this->discount_code_id = $code->id;
+            $this->total_amount = $this->getTotal("brutto");
+            $this->notification()->success(title: __('Sukces'), description: __('Wprowadzono poprawny kod promocyjny!'));
+        } else {
+            $this->notification()->error(title: __('Błąd'), description: __('Wprowadzono nieprawidłowy kod promocyjny'));
+        }
+    }
+
+    public function handleOrder(): RedirectResponse|Redirector
+    {
+        if (!auth()->check()) {
+            $customer = ClientECommerce::where([
                 'telephone_prefix' => $this->address_form['telephone_prefix'],
                 'telephone_number' => $this->address_form['telephone_number'],
-                'password' => password_hash(uniqid('', true), PASSWORD_BCRYPT),
-                'rodo_acceptance' => 1,
-            ]);
+                'email' => $this->address_form['email'],
+            ])->first();
+            if (!$customer) {
+                $customer = ClientECommerce::create([
+                    'email' => $this->address_form['email'],
+                    'first_name' => $this->address_form['first_name'],
+                    'last_name' => $this->address_form['last_name'],
+                    'login' => uniqid('customer_', true),
+                    'telephone_prefix' => $this->address_form['telephone_prefix'],
+                    'telephone_number' => $this->address_form['telephone_number'],
+                    'password' => password_hash(uniqid('', true), PASSWORD_BCRYPT),
+                    'rodo_acceptance' => 1,
+                ]);
+            }
             $customer_id = $customer->id;
         } else {
             $customer_id = auth()->id();
+            $customer = ClientECommerce::find(auth()->id());
         }
-        $address = [
-            'invoice' => false,
-        ];
-        $delivery = [
-            'invoice' => false,
-        ];
+        $address = ['invoice' => false];
+        $delivery = ['invoice' => false];
         if ($this->address_form['document'] === "invoice") {
             $address['invoice'] = true;
-            $address['data'] = InvoiceRegisterAddress::create([
-                'client_e_commerce_id' => $customer_id,
-                'city' => $this->address_form['city'],
-                'country' => $this->address_form['country'],
-                'apartment_number' => $this->address_form['apartment_number'],
-                'house_number' => $this->address_form['house_number'],
-                'province' => $this->address_form['province'],
-                'street' => $this->address_form['street'],
-                'postal_code' => $this->address_form['postal_code'],
+            $invoiceAddress = InvoiceRegisterAddress::where([
                 'nip' => $this->address_form['nip'],
-                'company_name' => $this->address_form['company_name']
-            ]);
+            ])->first();
+            if (!$invoiceAddress) {
+                $invoiceAddress = InvoiceRegisterAddress::create([
+                    'client_e_commerce_id' => $customer_id,
+                    'city' => $this->address_form['city'],
+                    'country' => $this->address_form['country'],
+                    'apartment_number' => $this->address_form['apartment_number'],
+                    'house_number' => $this->address_form['house_number'],
+                    'province' => $this->address_form['province'],
+                    'street' => $this->address_form['street'],
+                    'postal_code' => $this->address_form['postal_code'],
+                    'nip' => $this->address_form['nip'],
+                    'company_name' => $this->address_form['company_name'],
+                ]);
+            }
+            $address['data'] = $invoiceAddress;
         } else {
-            $address['data'] = Address::create([
-                'client_e_commerce_id' => $customer_id,
-                'city' => $this->address_form['city'],
-                'country' => $this->address_form['country'],
-                'apartment_number' => $this->address_form['apartment_number'],
-                'house_number' => $this->address_form['house_number'],
-                'province' => $this->address_form['province'],
+            $nonInvoiceAddress = Address::where([
                 'street' => $this->address_form['street'],
+                'house_number' => $this->address_form['house_number'],
+                'apartment_number' => $this->address_form['apartment_number'],
                 'postal_code' => $this->address_form['postal_code'],
-            ]);
+            ])->first();
+            if (!$nonInvoiceAddress) {
+                $nonInvoiceAddress = Address::create([
+                    'client_e_commerce_id' => $customer_id,
+                    'city' => $this->address_form['city'],
+                    'country' => $this->address_form['country'],
+                    'apartment_number' => $this->address_form['apartment_number'],
+                    'house_number' => $this->address_form['house_number'],
+                    'province' => $this->address_form['province'],
+                    'street' => $this->address_form['street'],
+                    'postal_code' => $this->address_form['postal_code'],
+                ]);
+            }
+            $address['data'] = $nonInvoiceAddress;
         }
         if (!$this->delivery_form['duplicate']) {
             if ($this->delivery_form['document'] === "invoice") {
@@ -242,6 +217,8 @@ class Checkout extends Component
             ]);
         }
 
+        SymfoniaService::createOrder($customer, $order);
+
         $method = PaymentMethod::find($this->payment_method);
         if ($method->type === "gateway") {
             $openPayuService = new OpenPayUService($method);
@@ -253,8 +230,7 @@ class Checkout extends Component
         }
     }
 
-    public
-    function updated()
+    public function updated(): void
     {
         $this->total_amount = $this->getTotal("brutto");
     }

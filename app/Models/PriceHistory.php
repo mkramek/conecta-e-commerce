@@ -2,20 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Favorite extends Model
+class PriceHistory extends Model
 {
     protected $fillable = [
-        'customer_id',
         'product_variant_id',
+        'price_net',
+        'price_gross',
     ];
 
-    public function customer(): BelongsTo
-    {
-        return $this->belongsTo(ClientECommerce::class, 'customer_id');
-    }
+    public $timestamps = true;
 
     public function variant(): BelongsTo
     {

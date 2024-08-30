@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Producer extends Model
 {
-    use HasUuids;
     use HasFactory;
+    use HasUuids;
 
     protected $fillable = [
-        'name'
+        'name',
+        'position',
     ];
 }

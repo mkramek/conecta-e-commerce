@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductMetaData extends Model
 {
-    use HasUuids;
     use HasFactory;
+    use HasUuids;
     use SoftDeletes;
 
     /**
@@ -28,7 +28,7 @@ class ProductMetaData extends Model
         'base_description',
         'seo_description',
         'keywords',
-        'lang'
+        'lang',
     ];
 
     public function product(): BelongsTo

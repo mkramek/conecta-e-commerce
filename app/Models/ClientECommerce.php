@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,15 +12,14 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
-
 class ClientECommerce extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory;
-    use Notifiable;
-    use TwoFactorAuthenticatable;
-    use SoftDeletes;
     use HasUuids;
+    use Notifiable;
+    use SoftDeletes;
+    use TwoFactorAuthenticatable;
 
     /**
      * \App\Models\ClientECommerce::factory(10)->create();
@@ -43,7 +41,8 @@ class ClientECommerce extends Authenticatable
         'is_account_blocked',
         'allow_newsletter',
         'rodo_acceptance',
-        'marketing_agreement'
+        'marketing_agreement',
+        'symfonia_code',
     ];
 
     /**
@@ -52,7 +51,7 @@ class ClientECommerce extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password'
+        'password',
     ];
 
     /**
@@ -65,7 +64,7 @@ class ClientECommerce extends Authenticatable
         'is_account_blocked' => 'boolean',
         'allow_newsletter' => 'boolean',
         'rodo_acceptance' => 'boolean',
-        'marketing_agreement' => 'boolean'
+        'marketing_agreement' => 'boolean',
     ];
 
     public function address(): HasOne

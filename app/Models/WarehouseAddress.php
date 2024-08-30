@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class WarehouseAddress extends Model
 {
-    use HasUuids;
     use HasFactory;
+    use HasUuids;
 
     /**
      * city => miasto
@@ -31,6 +31,6 @@ class WarehouseAddress extends Model
         'postal_code',
         'province',
         'country',
-        'additional_info'
+        'additional_info',
     ];
 }

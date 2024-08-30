@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Cart;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -12,6 +13,7 @@ class Header extends Component
     public $languages;
     public array $urls = [];
     public $menu = false;
+    public ?int $cart_count = null;
 
     public function mount(): void
     {
@@ -38,6 +40,12 @@ class Header extends Component
 
     public function render(): View
     {
+        if (auth()->check()) {
+            $cart_id = auth()->id();
+        } else {
+            $cart_id = session()->getId();
+        }
+        $this->cart_count = Cart::where('customer_id', $cart_id)->sum('quantity');
         return view('livewire.header');
     }
 

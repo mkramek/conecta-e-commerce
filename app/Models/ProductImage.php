@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProductImage extends Model
 {
@@ -22,7 +22,7 @@ class ProductImage extends Model
         'product_id',
         'file_name',
         'url',
-        'display_position'
+        'display_position',
     ];
 
     public function product(): BelongsTo

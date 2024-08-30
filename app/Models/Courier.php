@@ -16,10 +16,10 @@ class Courier extends Model
         'status_endpoint',
         'fee',
         'user_id',
-        'enabled'
+        'enabled',
     ];
 
     protected $casts = [
-        'enabled' => 'boolean'
+        'enabled' => 'boolean',
     ];
 }

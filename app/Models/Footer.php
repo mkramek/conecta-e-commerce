@@ -9,7 +9,6 @@ class Footer extends Model
 {
     use HasFactory;
 
-
     /**
      * company_name => nazwa firmy
      * city => miasto
@@ -34,6 +33,6 @@ class Footer extends Model
         'email',
         'telephone_one',
         'telephone_two',
-        'fax'
+        'fax',
     ];
 }

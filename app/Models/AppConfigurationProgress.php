@@ -21,7 +21,7 @@ class AppConfigurationProgress extends Model
         'has_created_seo_for_any_lang',
         'has_configured_footer',
         'has_configured_bank',
-        'has_configured_warehouse_addresses'
+        'has_configured_warehouse_addresses',
     ];
 
     /**
@@ -33,6 +33,6 @@ class AppConfigurationProgress extends Model
         'has_created_seo_for_any_lang' => 'boolean',
         'has_configured_footer' => 'boolean',
         'has_configured_bank' => 'boolean',
-        'has_configured_warehouse_addresses' => 'boolean'
+        'has_configured_warehouse_addresses' => 'boolean',
     ];
 }

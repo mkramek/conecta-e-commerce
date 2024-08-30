@@ -15,9 +15,9 @@ class User extends Authenticatable
     use HasApiTokens;
     use HasFactory;
     use HasProfilePhoto;
+    use HasRoles;
     use Notifiable;
     use TwoFactorAuthenticatable;
-    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -29,7 +29,7 @@ class User extends Authenticatable
         'email',
         'password',
         'is_super_admin',
-        'is_account_blocked'
+        'is_account_blocked',
     ];
 
     /**
@@ -52,7 +52,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'is_super_admin' => 'boolean',
-        'is_account_blocked' => 'boolean'
+        'is_account_blocked' => 'boolean',
     ];
 
     /**

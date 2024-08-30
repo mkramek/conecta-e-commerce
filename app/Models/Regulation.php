@@ -2,16 +2,15 @@
 
 namespace App\Models;
 
-use App\Models\RegulationCategory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Regulation extends Model
 {
-    use HasUuids;
     use HasFactory;
+    use HasUuids;
 
     /**
      * name => nazwa regulaminu,
@@ -31,11 +30,11 @@ class Regulation extends Model
         'lang',
         'regulation_category_id',
         'url',
-        'file_name'
+        'file_name',
     ];
 
     protected $casts = [
-        'is_published' => 'boolean'
+        'is_published' => 'boolean',
     ];
 
     public function category(): BelongsTo

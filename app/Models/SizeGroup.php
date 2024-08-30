@@ -20,7 +20,7 @@ class SizeGroup extends Model
      */
     protected $fillable = [
         'group_name',
-        'group_code'
+        'group_code',
     ];
 
     public function sizes(): HasMany

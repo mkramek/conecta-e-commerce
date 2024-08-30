@@ -1,5 +1,5 @@
 <footer
-    class="bg-zinc-600 text-white flex flex-col items-stretch justify-evenly gap-4 pt-8 pb-6 mt-8 lg:h-72 px-8">
+    class="bg-zinc-600 text-white flex flex-col items-stretch justify-evenly gap-4 pt-8 pb-6 lg:h-72 px-8">
     <div class="flex mx-auto gap-4 flex-col lg:flex-row">
         <div class="pb-5 text-center my-auto">
             <div class="text-center">

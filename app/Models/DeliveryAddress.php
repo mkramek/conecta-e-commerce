@@ -36,7 +36,7 @@ class DeliveryAddress extends Model
         'province',
         'country',
         'additional_info',
-        'client_e_commerce_id'
+        'client_e_commerce_id',
     ];
 
     public function clientECommerce(): BelongsTo

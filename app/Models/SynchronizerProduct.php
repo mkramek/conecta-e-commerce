@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SynchronizerProduct extends Model
 {
@@ -19,16 +19,12 @@ class SynchronizerProduct extends Model
         'symfonia_id',
         'name',
         'code',
-        'model'
+        'model',
+        'product_id',
     ];
 
-    public function baseProducts(): HasMany
+    public function product(): HasOne
     {
-        return $this->hasMany(Product::class);
-    }
-
-    public function productVariants(): HasOne
-    {
-        return $this->hasOne(ProductVariant::class);
+        return $this->hasOne(Product::class, 'synchronizer_product_id', 'product_id');
     }
 }

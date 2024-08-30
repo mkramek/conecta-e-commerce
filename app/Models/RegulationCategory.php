@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class RegulationCategory extends Model
 {
-    use HasUuids;
     use HasFactory;
+    use HasUuids;
 
     /**
      * name => Unikalna nazwa kategorii regulaminów
@@ -18,7 +18,7 @@ class RegulationCategory extends Model
      * @var string[]
      */
     protected $fillable = [
-        'name'
+        'name',
     ];
 
     public function regulations(): HasMany

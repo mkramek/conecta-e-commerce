@@ -42,7 +42,7 @@ class Listing extends Component
 
     public function render(): View
     {
-        $variants = $this->getVariants();
+        $variants = $this->getProducts();
         return view('livewire.product.listing', [
             'products' => $variants->paginate(perPage: 12),
         ]);
@@ -101,5 +101,60 @@ class Listing extends Component
         }
 
         return $variants;
+    }
+
+    public function getProducts()
+    {
+        $categories = [
+            'first' => [],
+            'second' => [],
+            'third' => [],
+        ];
+        $result = Product::with('variants')
+            ->where('is_active', 1);
+        if ($this->primary) {
+            $primary_category = FirstLevelCategory::where("slug_{$this->lang}", $this->primary)->first();
+            $categories['first'][] = $primary_category->id;
+            if ($this->secondary) {
+                $secondary_category = SecondLevelCategory::where([
+                    'first_level_category_id' => $primary_category->id,
+                    "slug_{$this->lang}" => $this->secondary,
+                ])->first();
+                $categories['second'][] = $secondary_category->id;
+                if ($this->tertiary) {
+                    $tertiary_category = ThirdLevelCategory::where([
+                        'second_level_category_id' => $secondary_category->id,
+                        "slug_{$this->lang}" => $this->tertiary,
+                    ])->first();
+                    $categories['third'][] = $tertiary_category->id;
+                } else {
+                    $categories['third'] = ThirdLevelCategory::where('second_level_category_id', $secondary_category->id)->pluck('id');
+                }
+            } else {
+                $categories['second'] = SecondLevelCategory::where('first_level_category_id', $primary_category->id)->pluck('id');
+                $categories['third'] = ThirdLevelCategory::whereIn('second_level_category_id', $categories['second'])->pluck('id');
+            }
+        }
+
+        if ($this->filters['availability']) {
+            $result = $result->whereHas('variants', fn($query) => $query->where('quantity', $this->filters['availability'] === 1 ? ">" : "=", 0));
+        }
+        if ($this->filters['price_min']) {
+            $result = $result->whereHas('variants', fn($query) => $query->where('brutto_price', ">=", $this->filters['price_min']));
+        }
+        if ($this->filters['price_max']) {
+            $result = $result->whereHas('variants', fn($query) => $query->where('brutto_price', "<=", $this->filters['price_max']));
+        }
+        if ($this->filters['producer']) {
+            $result = $result->where('producer', $this->filters['producer']);
+        }
+        if (!empty($categories['first'])) {
+            $products_primary = Product::whereHas('firstLevelCategories', fn($q) => $q->whereIn('id', $categories['first']))->pluck('id')->toArray();
+            $products_secondary = Product::whereHas('secondLevelCategories', fn($q) => $q->whereIn('id', $categories['second']))->pluck('id')->toArray();
+            $products_tertiary = Product::whereHas('thirdLevelCategories', fn($q) => $q->whereIn('id', $categories['third']))->pluck('id')->toArray();
+            $result = $result->whereIn('id', array_merge($products_primary, $products_secondary, $products_tertiary));
+        }
+
+        return $result;
     }
 }
