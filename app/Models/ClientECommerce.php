@@ -43,6 +43,7 @@ class ClientECommerce extends Authenticatable
         'rodo_acceptance',
         'marketing_agreement',
         'symfonia_code',
+        'is_b2b',
     ];
 
     /**
@@ -65,6 +66,7 @@ class ClientECommerce extends Authenticatable
         'allow_newsletter' => 'boolean',
         'rodo_acceptance' => 'boolean',
         'marketing_agreement' => 'boolean',
+        'is_b2b' => 'boolean',
     ];
 
     public function address(): HasOne

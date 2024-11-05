@@ -39,6 +39,7 @@ class Checkout extends Component
     public string $discount_code;
     public int $discount_code_id = -1;
     public float $delivery_fee;
+    public bool $has_customizables = false;
 
     public function rules()
     {
@@ -48,14 +49,22 @@ class Checkout extends Component
     public function mount(): void
     {
         $this->couriers = Courier::select(['id', 'name', 'img_url', 'fee', 'enabled'])->where('enabled', true)->get();
-        $this->payment_methods = PaymentMethod::all(['id', 'type', 'name', 'img_url']);
         $this->lang = app()->getLocale();
         $this->nameColumn = "name_{$this->lang}";
         $this->items = Cart::where('customer_id', auth()->id() ?? session()->getId())->get();
         $this->total_amount = $this->getTotal();
+        $this->has_customizables = Cart::where([
+            'customer_id' => auth()->id() ?? session()->getId(),
+            'is_customizable' => true,
+        ])->count() > 0;
+        if ($this->has_customizables) {
+            $this->payment_methods = PaymentMethod::select(['id', 'type', 'name', 'img_url'])->where('type', 'custom')->get();
+        } else {
+            $this->payment_methods = PaymentMethod::select(['id', 'type', 'name', 'img_url'])->where('type', '<>', 'custom')->get();
+        }
     }
 
-    public function getTotal($with_discounts = true): string
+    public function getTotal($with_discounts = true): float
     {
         $total = array_reduce([...$this->items], function ($acc, $item) use ($with_discounts) {
             if ($with_discounts) {
@@ -72,7 +81,7 @@ class Checkout extends Component
             $discount_code = DiscountCode::find($this->discount_code_id);
             $total = $total - ($total * $discount_code->value / 100);
         }
-        return number_format($total, 2);
+        return $total;
     }
 
     public function render(): View
@@ -96,8 +105,6 @@ class Checkout extends Component
     {
         if (!auth()->check()) {
             $customer = ClientECommerce::where([
-                'telephone_prefix' => $this->address_form['telephone_prefix'],
-                'telephone_number' => $this->address_form['telephone_number'],
                 'email' => $this->address_form['email'],
             ])->first();
             if (!$customer) {
@@ -230,8 +237,24 @@ class Checkout extends Component
         }
     }
 
-    public function updated(): void
+    public function updated($field): void
     {
+        if ($field === "courier") {
+            $crr = Courier::find($this->courier);
+            if (!$crr->is_onsite) {
+                $result = PaymentMethod::where('type', '<>', 'cash');
+            } else {
+                $result = PaymentMethod::query();
+            }
+
+            if ($this->has_customizables) {
+                $result = $result->where('type', 'custom')->get();
+            } else {
+                $result = $result->where('type', '<>', 'custom')->get();
+            }
+
+            $this->payment_methods = $result;
+        }
         $this->total_amount = $this->getTotal("brutto");
     }
 }

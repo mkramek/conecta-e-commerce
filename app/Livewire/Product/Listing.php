@@ -42,9 +42,9 @@ class Listing extends Component
 
     public function render(): View
     {
-        $variants = $this->getProducts();
+        $products = $this->getProducts();
         return view('livewire.product.listing', [
-            'products' => $variants->paginate(perPage: 12),
+            'products' => $products->paginate(perPage: 12),
         ]);
     }
 
@@ -111,7 +111,8 @@ class Listing extends Component
             'third' => [],
         ];
         $result = Product::with('variants')
-            ->where('is_active', 1);
+            ->where('is_active', 1)
+            ->whereNotNull("slug_{$this->lang}");
         if ($this->primary) {
             $primary_category = FirstLevelCategory::where("slug_{$this->lang}", $this->primary)->first();
             $categories['first'][] = $primary_category->id;
@@ -155,6 +156,6 @@ class Listing extends Component
             $result = $result->whereIn('id', array_merge($products_primary, $products_secondary, $products_tertiary));
         }
 
-        return $result;
+        return $result->orderBy('priority', 'desc');
     }
 }

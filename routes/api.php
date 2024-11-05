@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MailController;
+use App\Http\Controllers\ProductsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,3 +15,5 @@ Route::controller(MailController::class)->group(function () {
     Route::get('/mail/order-shipped', 'sendOrderShipped');
     Route::get('/mail/customer-created', 'sendCustomerCreated');
 });
+
+Route::get('/products', [ProductsController::class, 'index'])->name('api.products.index');

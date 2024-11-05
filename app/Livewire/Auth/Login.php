@@ -3,6 +3,7 @@
 namespace App\Livewire\Auth;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -18,10 +19,13 @@ class Login extends Component
     /** @var bool */
     public $remember = false;
 
-    protected $rules = [
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ];
+    protected function rules()
+    {
+        return [
+            'email' => 'required|email',
+            'password' => 'required',
+        ];
+    }
 
     /** @var string */
     public $lang;
@@ -31,11 +35,11 @@ class Login extends Component
         $this->lang = app()->getLocale();
     }
 
-    public function authenticate(): RedirectResponse|null
+    public function authenticate(): RedirectResponse|Redirector|null
     {
         $this->validate();
 
-        if (!Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             $this->addError('email', __('auth.failed'));
 
             return null;

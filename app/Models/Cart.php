@@ -11,6 +11,11 @@ class Cart extends Model
         'product_id',
         'variant_id',
         'quantity',
+        'is_customizable',
+    ];
+
+    protected $casts = [
+        'is_customizable' => 'boolean',
     ];
 
     public function product()

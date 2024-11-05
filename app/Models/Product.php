@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 // Produkt bazowy
 class Product extends Model
@@ -41,6 +42,9 @@ class Product extends Model
         'producer',
         'model',
         'has_discount',
+        'priority',
+        'step',
+        'is_customizable',
     ];
 
     /**
@@ -51,6 +55,7 @@ class Product extends Model
     protected $casts = [
         'has_discount' => 'boolean',
         'is_active' => 'boolean',
+        'is_customizable' => 'boolean',
     ];
 
     public function variants(): HasMany
@@ -88,7 +93,7 @@ class Product extends Model
 
     public function images(): HasMany
     {
-        return $this->hasMany(ProductImage::class);
+        return $this->hasMany(ProductImage::class, 'product_id');
     }
 
     public function carts(): HasMany

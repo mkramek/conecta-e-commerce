@@ -37,6 +37,9 @@ class CartItem extends Component
 
     private function calculate(): void
     {
+        if ($this->item->quantity < 1) {
+            $this->item->quantity = $this->item->variant->product->step;
+        }
         if ($this->item->variant->brutto_discount_price) {
             $this->discount_subtotal = $this->item->quantity * $this->item->variant->brutto_discount_price;
         }
@@ -45,8 +48,9 @@ class CartItem extends Component
 
     public function updated($param): void
     {
-        if ($param === "item.quantity") {
-            $this->calculate();
+        if ($param === "item.quantity" && $this->item->quantity < 1) {
+            $this->item->update(['quantity' => $this->item->product->step]);
+            $this->confirm();
         }
     }
 

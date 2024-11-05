@@ -63,6 +63,7 @@ class ProductVariant extends Model
         'mark_up',
         'netto_discount_price',
         'brutto_discount_price',
+        'step',
     ];
 
     protected $casts = [
@@ -107,5 +108,10 @@ class ProductVariant extends Model
     public function priceHistory(): HasMany
     {
         return $this->hasMany(PriceHistory::class, 'product_variant_id');
+    }
+
+    public function productVariantColor(): BelongsTo
+    {
+        return $this->belongsTo(Color::class, 'color', 'name');
     }
 }

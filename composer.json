@@ -14,8 +14,12 @@
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.5",
         "openpayu/openpayu": "^2.3",
+        "openspout/openspout": "^4.26",
+        "power-components/livewire-powergrid": "^5.10",
+        "robsontenorio/mary": "^1.40",
         "shipstream/ups-rest-php-sdk": "^2.3",
         "spatie/laravel-permission": "^6.7",
+        "wire-elements/modal": "^2.0",
         "wireui/breadcrumbs": "^3.1",
         "wireui/phosphoricons": "^2.3",
         "wireui/wireui": "^1.19"

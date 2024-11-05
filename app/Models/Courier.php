@@ -17,9 +17,11 @@ class Courier extends Model
         'fee',
         'user_id',
         'enabled',
+        'is_onsite',
     ];
 
     protected $casts = [
         'enabled' => 'boolean',
+        'is_onsite' => 'boolean',
     ];
 }

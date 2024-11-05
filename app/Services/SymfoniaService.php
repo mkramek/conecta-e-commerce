@@ -21,7 +21,7 @@ class SymfoniaService
             $customerCode = uniqid();
             $companyAddress = $customer->invoiceRegisterAddress;
             $deliveryAddress = $customer->address;
-            $symfoniaCustomer = Http::withHeader('Authorization', "Session $token")->post("$apiUrl/Contractors/Create?syncFk=false", [
+            $symfoniaCustomer = Http::withoutVerifying()->withHeader('Authorization', "Session $token")->post("$apiUrl/Contractors/Create?syncFk=false", [
                 'Active' => true,
                 "Code" => $customerCode,
                 "Name" => $companyAddress ? $companyAddress->company_name : "{$customer->first_name} {$customer->last_name}",
@@ -54,7 +54,7 @@ class SymfoniaService
             if ($symfoniaCustomer->ok()) {
                 $customer->update(['symfonia_code' => $customerCode]);
             }
-            $orderRequest = Http::withHeader("Authorization", "Session $token")->post("$apiUrl/OrdersIssue/New?issue=true", [
+            $orderRequest = Http::withoutVerifying()->withHeader("Authorization", "Session $token")->post("$apiUrl/OrdersIssue/New?issue=true", [
                 "TypeCode" => "ZMO",
                 "Series" => "sZMO",
                 "Department" => "CONECTA",
@@ -64,17 +64,17 @@ class SymfoniaService
                 ],
                 "PaymentFormId" => 67362,
                 "SalePriceType" => "4",
-                "Note" => "",
+                "Note" => $order->items()->where(['is_customizable' => true])->count() > 0 ? "ZAMÓWIENIE DO WYCENY, ELEMENTY Z GRAFIKĄ" : "",
                 "Description" => "Zamówienie ze sklepu WWW, nr zam. {$order->id}",
                 "ReceivedBy" => "",
                 "PriceKind" => 1,
                 "Marker" => "79",
                 "ReservationType" => 0,
-                "Positions" => array_map(fn(OrderItem $item) => [
+                "Positions" => $order->items->map(fn(OrderItem $item) => [
                     'Code' => $item->variant->symfonia_id,
                     'Quantity' => $item->quantity,
                     'Value' => $item->has_discount ? $item->total_discount_gross : $item->total_gross,
-                ], $order->items),
+                ]),
                 "Buyer" => [
                     "Code" => $customerCode
                 ],
@@ -97,7 +97,7 @@ class SymfoniaService
         $apiKey = config('app.symfonia.api_key');
         $apiUrl = config('app.symfonia.api_url');
 
-        $auth = Http::withHeader('Authorization', "Application $apiKey")->get("$apiUrl/Sessions/OpenNewSession?deviceName=ecommerce");
+        $auth = Http::withoutVerifying()->withHeader('Authorization', "Application $apiKey")->get("$apiUrl/Sessions/OpenNewSession?deviceName=ecommerce");
         return stripslashes($auth->body());
     }
 
@@ -105,6 +105,6 @@ class SymfoniaService
     {
         $apiUrl = config('app.symfonia.api_url');
 
-        Http::withHeader("Authorization", "Session $token")->get("$apiUrl/Sessions/CloseSession");
+        Http::withoutVerifying()->withHeader("Authorization", "Session $token")->get("$apiUrl/Sessions/CloseSession");
     }
 }

@@ -55,7 +55,6 @@ class FirstLevelCategory extends Model
         'position',
         'display_in_menu',
         'size_group_id',
-        'icon',
     ];
 
     public function secondLevelCategories(): HasMany

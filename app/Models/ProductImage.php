@@ -23,10 +23,16 @@ class ProductImage extends Model
         'file_name',
         'url',
         'display_position',
+        'color_id',
     ];
 
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function color(): BelongsTo
+    {
+        return $this->belongsTo(Color::class);
     }
 }
