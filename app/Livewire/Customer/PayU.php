@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Customer;
 
+use App\Models\Order;
 use Illuminate\View\View;
 use Livewire\Component;
 
@@ -9,7 +10,7 @@ class PayU extends Component
 {
     public $lang;
 
-    public function mount(): void
+    public function mount($order): void
     {
         $this->lang = app()->getLocale();
     }

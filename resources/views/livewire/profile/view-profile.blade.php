@@ -5,7 +5,7 @@
             @if (Auth::user()->is_b2b)
                 <x-button href='{{ route("b2b.$lang") }}' icon="logout" label="{{ __('Panel B2B') }}" primary />
             @endif
-            <x-button icon="logout" label="{{ __('Wyloguj się') }}" secondary />
+            <x-button icon="logout" label="{{ __('Wyloguj się') }}" secondary wire:click='handleLogout' />
         </div>
     </div>
     <div class="flex flex-wrap mt-6 gap-4 justify-center lg:justify-evenly">
@@ -48,7 +48,110 @@
                                         Link do przesyłki
                                     </x-button>
                                 @endif
+                                <x-button green wire:click="toggle('{{ $order->id }}')">
+                                    @if ($expanded === $order->id)
+                                        <span>Ukryj szczegóły</span>
+                                    @else
+                                        <span>Pokaż szczegóły</span>
+                                    @endif
+                                </x-button>
                             </div>
+                            @if ($expanded === $order->id)
+                                <div class="mt-2">
+                                    @if ($order->invoiceAddress)
+                                        <h4 class="text-lg font-bold">Adres firmy</h4>
+                                        <dl class="flex flex-wrap justify-between items-center">
+                                            <dt class="basis-1/2 text-sm text-gray-500">Nazwa firmy</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceAddress->company_name }}</dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">NIP</dt>
+                                            <dd class="basis-1/2 text-sm text-right">{{ $order->invoiceAddress->nip }}
+                                            </dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Miasto</dt>
+                                            <dd class="basis-1/2 text-sm text-right">{{ $order->invoiceAddress->city }}
+                                            </dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Ulica</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceAddress->street }}
+                                            </dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Nr domu</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceAddress->house_number }}</dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Nr mieszkania</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceAddress->apartment_number }}
+                                            </dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Kod pocztowy</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceAddress->postal_code }}</dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Kraj</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceAddress->country }}
+                                            </dd>
+                                        </dl>
+                                    @endif
+                                    @if ($order->deliveryAddress)
+                                        <h4 class="text-lg font-bold mt-2">Adres dostawy</h4>
+                                        <dl class="flex flex-wrap justify-between items-center">
+                                            <dt class="basis-1/2 text-sm text-gray-500">Miasto</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->deliveryAddress->city }}
+                                            </dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Ulica</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->deliveryAddress->street }}
+                                            </dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Nr domu</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->deliveryAddress->house_number }}</dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Nr mieszkania</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->deliveryAddress->apartment_number }}
+                                            </dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Kod pocztowy</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->deliveryAddress->postal_code }}</dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Kraj</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->deliveryAddress->country }}
+                                            </dd>
+                                        </dl>
+                                    @elseif($order->invoiceDeliveryAddress)
+                                        <h4 class="text-lg font-bold mt-2">Adres dostawy na fakturze</h4>
+                                        <dl class="flex flex-wrap justify-between items-center">
+                                            <dt class="basis-1/2 text-sm text-gray-500">Nazwa firmy</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceDeliveryAddress->company_name }}</dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">NIP</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceDeliveryAddress->nip }}
+                                            </dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Miasto</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceDeliveryAddress->city }}
+                                            </dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Ulica</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceDeliveryAddress->street }}
+                                            </dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Nr domu</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceDeliveryAddress->house_number }}</dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Nr mieszkania</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceDeliveryAddress->apartment_number }}
+                                            </dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Kod pocztowy</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceDeliveryAddress->postal_code }}</dd>
+                                            <dt class="basis-1/2 text-sm text-gray-500">Kraj</dt>
+                                            <dd class="basis-1/2 text-sm text-right">
+                                                {{ $order->invoiceDeliveryAddress->country }}
+                                            </dd>
+                                        </dl>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>

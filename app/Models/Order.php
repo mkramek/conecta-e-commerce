@@ -31,6 +31,21 @@ class Order extends Model
         'invoice_delivery_address_id',
     ];
 
+    public function invoiceAddress(): BelongsTo
+    {
+        return $this->belongsTo(InvoiceRegisterAddress::class, 'invoice_address_id');
+    }
+
+    public function deliveryAddress(): BelongsTo
+    {
+        return $this->belongsTo(DeliveryAddress::class, 'delivery_address_id');
+    }
+
+    public function invoiceDeliveryAddress(): BelongsTo
+    {
+        return $this->belongsTo(InvoiceRegisterAddress::class, 'invoice_delivery_address_id');
+    }
+
     public function customer(): BelongsTo
     {
         return $this->belongsTo(ClientECommerce::class, 'user_id');

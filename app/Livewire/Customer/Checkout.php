@@ -12,7 +12,6 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PaymentMethod;
 use App\Services\OpenPayUService;
-use App\Services\SymfoniaService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
@@ -36,7 +35,7 @@ class Checkout extends Component
     public bool $terms;
     public string $nameColumn;
     public float $total_amount = 0.0;
-    public string $discount_code;
+    public string $discount_code = '';
     public int $discount_code_id = -1;
     public float $delivery_fee;
     public bool $has_customizables = false;
@@ -103,10 +102,21 @@ class Checkout extends Component
 
     public function handleOrder(): RedirectResponse|Redirector
     {
+        $customer = null;
         if (!auth()->check()) {
-            $customer = ClientECommerce::where([
-                'email' => $this->address_form['email'],
-            ])->first();
+            if (!empty($this->address_form['nip']) && $this->address_form['nip'] !== '') {
+                $invAddress = InvoiceRegisterAddress::where(['nip' => $this->address_form['nip']])->first();
+                if ($invAddress) {
+                    $customer = $invAddress->clientECommerce;
+                }
+            } else {
+                $customer = ClientECommerce::where([
+                    'email' => $this->address_form['email'],
+                ])->orWhere(fn($query) => $query->where([
+                    'telephone_number' => $this->address_form['telephone_number'],
+                    'telephone_prefix' => $this->address_form['telephone_prefix']
+                ]))->first();
+            }
             if (!$customer) {
                 $customer = ClientECommerce::create([
                     'email' => $this->address_form['email'],
@@ -224,7 +234,7 @@ class Checkout extends Component
             ]);
         }
 
-        SymfoniaService::createOrder($customer, $order);
+        // SymfoniaService::createOrder($customer, $order);
 
         $method = PaymentMethod::find($this->payment_method);
         if ($method->type === "gateway") {

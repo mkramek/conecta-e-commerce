@@ -42,9 +42,12 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 $lang = App::getLocale();
 
 Route::redirect('/', "/$lang");
+
+Route::get("/$lang/login", Login::class)->name('login');
 
 foreach (config('lang.available_languages') as $lang) {
     Route::prefix($lang)->group(function () use ($lang) {
@@ -73,7 +76,7 @@ foreach (config('lang.available_languages') as $lang) {
             Route::post('logout', LogoutController::class)->name("logout.$lang");
         });
 
-        Route::prefix('/profile')->group(function () use ($lang) {
+        Route::middleware('auth')->prefix('/profile')->group(function () use ($lang) {
             Route::get('/', ViewProfile::class)->name("profile.$lang");
             Route::get('/orders', Orders::class)->name("orders.$lang");
             Route::get('/b2b', B2B::class)->name("b2b.$lang");

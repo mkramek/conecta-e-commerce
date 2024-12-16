@@ -9,6 +9,7 @@ use App\Models\Favorite;
 use App\Models\InvoiceRegisterAddress;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -17,6 +18,8 @@ use WireUi\Traits\Actions;
 class ViewProfile extends Component
 {
     use Actions;
+
+    public ?string $expanded = null;
 
     public string $lang;
 
@@ -69,6 +72,15 @@ class ViewProfile extends Component
     public bool $addressUpdateModal = false;
 
     public bool $addressErrorModal = false;
+
+    public function toggle($orderId)
+    {
+        if ($this->expanded === $orderId) {
+            $this->expanded = null;
+        } else {
+            $this->expanded = $orderId;
+        }
+    }
 
     public function mount(): void
     {
@@ -178,5 +190,11 @@ class ViewProfile extends Component
     {
         $this->addressErrorModal = false;
         $this->addressUpdateModal = false;
+    }
+
+    public function handleLogout()
+    {
+        auth()->logout();
+        return redirect()->route("home.{$this->lang}");
     }
 }

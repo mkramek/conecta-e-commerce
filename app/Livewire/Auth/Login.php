@@ -43,7 +43,10 @@ class Login extends Component
             $this->addError('email', __('auth.failed'));
 
             return null;
+        } else {
+            session()->regenerate();
         }
+
         $back = request()->query('back');
         if ($back) {
             return redirect()->intended("/$back");
