@@ -26,7 +26,7 @@
             <div class="swiper images-swiper">
                 <div class="swiper-wrapper">
                     @foreach ($images as $image)
-                        <div class="swiper-slide">
+                        <div wire:key="{{ $image->url }}" class="swiper-slide">
                             <img src="{{ $image->url }}" alt="{{ $product->$name_column }}" />
                         </div>
                     @endforeach
@@ -46,7 +46,7 @@
                         <div class="swiper products-swiper">
                             <div class="swiper-wrapper">
                                 @foreach ($similar as $similarItem)
-                                    <div class="swiper-slide">
+                                    <div wire:key="{{ $similarItem->id }}" class="swiper-slide">
                                         <livewire:product.variant-card :product="$similarItem" />
                                     </div>
                                 @endforeach
@@ -94,14 +94,24 @@
                 @if (count($availableColors) > 1)
                     <div>
                         <label for="product-variant-color-select" class="mb-1 text-white text-sm">Wybierz kolor</label>
-                        <x-select id="product-variant-color-select" class="mb-2" placeholder="Wybierz kolor"
-                            :searchable="false" empty-message="Brak kolorów" wire:model.live="color_id">
+                        <x-select
+                            id="product-variant-color-select"
+                            class="mb-2"
+                            placeholder="Wybierz kolor"
+                            :searchable="false"
+                            empty-message="Brak kolorów"
+                            wire:model.live="color_id"
+                        >
                             @foreach ($availableColors as $color)
                                 @php
                                     $label = $color->name === 'BRAK' ? 'Bez koloru' : $color->name;
                                 @endphp
-                                <x-select.option wire:key="{{ $color->id }}" :disabled="$color->name === $color_id" :$label
-                                    :value="$color->name" />
+                                <x-select.option
+                                    wire:key="{{ $color->id }}"
+                                    :disabled="$color->name === $color_id"
+                                    :$label
+                                    :value="$color->name"
+                                />
                             @endforeach
                         </x-select>
                     </div>
@@ -109,38 +119,64 @@
                 @if (count($availableSizes) > 1)
                     <div>
                         <label for="product-variant-size-select" class="mb-1 text-white text-sm">Wybierz rozmiar</label>
-                        <x-select id="product-variant-size-select" class="mb-4" placeholder="Wybierz rozmiar"
-                            :searchable="false" empty-message="Brak rozmiarów" wire:model.live="size_id">
+                        <x-select
+                            id="product-variant-size-select"
+                            class="mb-4"
+                            placeholder="Wybierz rozmiar"
+                            :searchable="false"
+                            empty-message="Brak rozmiarów"
+                            wire:model.live="size_id"
+                        >
                             @foreach ($availableSizes as $size)
                                 @php
                                     $label = $size->size_value === 0 ? 'Bez rozmiaru' : $size->size_value;
                                 @endphp
-                                <x-select.option wire:key="{{ $size->size_value }}" :disabled="$size->size_value === $size_id" :$label
-                                    :value="$size->size_value" />
+                                <x-select.option
+                                    wire:key="{{ $size->size_value }}"
+                                    :disabled="$size->size_value === $size_id"
+                                    :$label
+                                    :value="$size->size_value"
+                                />
                             @endforeach
                         </x-select>
                     </div>
                 @endif
-                <x-inputs.number min="0" step="{{ $product->step }}" wire:model="quantity" />
-                @if ($selected->product->is_customizable)
-                    <div class="flex justify-start items-start gap-2 mb-2 mt-4">
-                        <x-checkbox class="p-2 my-4" id="customization" wire:model="will_customize" />
-                        <label class="text-white"
-                            for="customization">{{ __('Chcę umieścić niestandardową grafikę') }}</label>
-                    </div>
-                @endif
-                @if ($selected->quantity <= 0)
-                    <x-button wire:click="send" warning class="mt-2 w-full">
-                        {{ __('Dodaj do koszyka (wydłużona realizacja)') }}
-                    </x-button>
-                @else
-                    <x-button wire:click="send" primary class="mt-2 w-full">
-                        {{ __('Dodaj do koszyka') }}
-                    </x-button>
-                @endif
+                <form wire:submit.prevent="send">
+                    <x-input
+                        type="number"
+                        min="0"
+                        step="{{ $product->step }}"
+                        wire:model="quantity"
+                    />
+                    @if ($selected->product->is_customizable)
+                        <div class="flex justify-start items-start gap-2 mb-2 mt-4">
+                            <x-checkbox class="p-2 my-4" id="customization" wire:model="will_customize" />
+                            <label class="text-white" for="customization">{{ __('Chcę umieścić niestandardową grafikę') }}</label>
+                        </div>
+                    @endif
+                    @if ($selected->quantity <= 0)
+                        <x-button type="submit" warning class="mt-2 w-full">
+                            {{ __('Dodaj do koszyka (wydłużona realizacja)') }}
+                        </x-button>
+                    @else
+                        <x-button type="submit" primary class="mt-2 w-full">
+                            {{ __('Dodaj do koszyka') }}
+                        </x-button>
+                    @endif
+                </form>
                 @if (auth()->check() && $favorite)
-                    <x-button primary white class="w-full mt-2 basis-full" wire:click="toggleFavorite">
-                        <x-icon name="heart" class="w-6" solid color="primary" />
+                    <x-button
+                        primary
+                        white
+                        class="w-full mt-2 basis-full"
+                        wire:click="toggleFavorite"
+                    >
+                        <x-icon
+                            name="heart"
+                            class="w-6"
+                            solid
+                            color="primary"
+                        />
                         <span>{{ __('Usuń z ulubionych') }}</span>
                     </x-button>
                 @elseif(auth()->check() && !$favorite)
@@ -149,7 +185,12 @@
                         <span>{{ __('Dodaj do ulubionych') }}</span>
                     </x-button>
                 @else
-                    <x-button disabled white class="w-full mt-2 basis-full" href='{{ route("login.$lang") }}'>
+                    <x-button
+                        disabled
+                        white
+                        class="w-full mt-2 basis-full"
+                        href='{{ route("login.$lang") }}'
+                    >
                         <x-icon name="heart" class="w-6" outline />
                         <span>{{ __('Zaloguj się, by dodać do ulubionych') }}</span>
                     </x-button>

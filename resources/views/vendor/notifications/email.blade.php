@@ -5,8 +5,6 @@
 @else
 @if ($level === 'error')
 # @lang('Whoops!')
-@else
-# @lang('Hello!')
 @endif
 @endif
 
@@ -37,7 +35,8 @@
 
 {{-- Salutation --}}
 @if (! empty($salutation))
-{{ $salutation }}
+{{ $salutation }}<br>
+{{ config('app.name') }}
 @else
 @lang('Regards'),<br>
 {{ config('app.name') }}
@@ -46,13 +45,12 @@
 {{-- Subcopy --}}
 @isset($actionText)
 <x-slot:subcopy>
-@lang(
-    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\n".
-    'into your web browser:',
+{{ __(
+    "passwords.reset_info",
     [
         'actionText' => $actionText,
     ]
-) <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
+) }} <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
 </x-slot:subcopy>
 @endisset
 </x-mail::message>

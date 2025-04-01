@@ -12,7 +12,7 @@
                     <div class="flex flex-col gap-3 ">
                         <div class="flex items-center gap-1">
                             <div>
-                                <x-icon name="location-marker" class="h-4 inline"/>
+                                <x-icon name="map-pin" class="h-4 inline"/>
                             </div>
                             <div>
                                 <p>{{ $contact->company_name }}</p>
@@ -36,7 +36,7 @@
                                 @if ($contact->fax)
                                     <x-icon name="printer" class="h-4 my-2"/>
                                 @endif
-                                <x-icon name="mail" class="h-4 my-2"/>
+                                <x-icon name="envelope" class="h-4 my-2"/>
                             </div>
                             <div>
                                 @if ($contact->fax)
@@ -56,46 +56,46 @@
                 </div>
             </div>
         </div>
-        <form class="p-4 mt-2">
+        <form wire:submit.prevent="handleSubmit" class="p-4 mt-2">
             <h3 class="font-bold">
                 Formularz kontaktowy
             </h3>
             <div class="flex flex-col lg:flex-row items-stretch justify-evenly gap-3 py-2">
                 <div class="basis-1/4">
-                    <x-input 
-                        label="Imie/ Nazwa firmy" 
+                    <x-input
+                        label="Imie/ Nazwa firmy"
                         id="contact_name"
                         wire:model.live="contact.name"
                     />
-                    <x-input 
-                        label="E-mail" 
+                    <x-input
+                        label="E-mail"
                         id="contact_email"
                         wire:model.live="contact.email"
                     />
-                    <x-input 
-                        label="Telefon" 
+                    <x-input
+                        label="Telefon"
                         id="contact_phone"
                         wire:model.live="contact.phone"
                     />
                 </div>
                 <div class="basis-1/2">
-                    <x-textarea 
+                    <x-textarea
                         label="Wiadomość"
                         id="contact_message"
-                        wire:model="message"
+                        wire:model="contact.message"
                     />
                 </div>
                 <div class="basis-1/4 py-4">
-                    <x-button class="mt-2 w-full bg-primary-500 ">
+                    <x-button type="submit" class="mt-2 w-full bg-primary-500 ">
                         <p class="text-white font-bold">Wyślij</p>
                     </x-button>
-                    <x-button class="mt-2 w-full bg-secondary-500 ">
+                    <x-button type="reset" class="mt-2 w-full bg-secondary-500 ">
                         <p class="text-black font-bold">Wyczyść</p>
                     </x-button>
                 </div>
             </div>
         </form>
     </div>
-</div> 
+</div>
 
-  
+

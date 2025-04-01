@@ -174,4 +174,6 @@ return [
 
     // Categories sidebar
     'all' => 'Wszystkie',
+
+    'searchHere' => 'Szukaj...'
 ];

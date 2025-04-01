@@ -11,11 +11,14 @@ class B2B extends Component
 {
     public Collection $offers;
 
+    public string $lang;
+
     #[Url]
     public ?string $tab = 'products';
 
     public function mount(): void
     {
+        $this->lang = app()->getLocale();
         $currentCustomer = auth()->user();
         $this->offers = IndividualOffer::with('items')->whereNull('rejected_at')->whereIn('customer_id', [$currentCustomer->parent_id, $currentCustomer->id])->get();
     }

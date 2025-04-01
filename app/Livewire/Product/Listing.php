@@ -48,61 +48,6 @@ class Listing extends Component
         ]);
     }
 
-    public function getVariants()
-    {
-        $categories = [
-            'first' => [],
-            'second' => [],
-            'third' => [],
-        ];
-        $variants = ProductVariant::with('product')
-            ->whereHas('product', fn($query) => $query->where('is_active', 1));
-        if ($this->primary) {
-            $primary_category = FirstLevelCategory::where("slug_{$this->lang}", $this->primary)->first();
-            $categories['first'][] = $primary_category->id;
-            if ($this->secondary) {
-                $secondary_category = SecondLevelCategory::where([
-                    'first_level_category_id' => $primary_category->id,
-                    "slug_{$this->lang}" => $this->secondary,
-                ])->first();
-                $categories['second'][] = $secondary_category->id;
-                if ($this->tertiary) {
-                    $tertiary_category = ThirdLevelCategory::where([
-                        'second_level_category_id' => $secondary_category->id,
-                        "slug_{$this->lang}" => $this->tertiary,
-                    ])->first();
-                    $categories['third'][] = $tertiary_category->id;
-                } else {
-                    $categories['third'] = ThirdLevelCategory::where('second_level_category_id', $secondary_category->id)->pluck('id');
-                }
-            } else {
-                $categories['second'] = SecondLevelCategory::where('first_level_category_id', $primary_category->id)->pluck('id');
-                $categories['third'] = ThirdLevelCategory::whereIn('second_level_category_id', $categories['second'])->pluck('id');
-            }
-        }
-
-        if ($this->filters['availability']) {
-            $variants = $variants->where('quantity', $this->filters['availability'] === 1 ? ">" : "=", 0);
-        }
-        if ($this->filters['price_min']) {
-            $variants = $variants->where('brutto_price', ">=", $this->filters['price_min']);
-        }
-        if ($this->filters['price_max']) {
-            $variants = $variants->where('brutto_price', "<=", $this->filters['price_min']);
-        }
-        if ($this->filters['producer']) {
-            $variants = $variants->whereHas('product', fn($query) => $query->where('producer', $this->filters['producer']));
-        }
-        if (!empty($categories['first'])) {
-            $products_primary = Product::whereHas('firstLevelCategories', fn($q) => $q->whereIn('id', $categories['first']))->pluck('id')->toArray();
-            $products_secondary = Product::whereHas('secondLevelCategories', fn($q) => $q->whereIn('id', $categories['second']))->pluck('id')->toArray();
-            $products_tertiary = Product::whereHas('thirdLevelCategories', fn($q) => $q->whereIn('id', $categories['third']))->pluck('id')->toArray();
-            $variants = $variants->whereIn('product_id', array_merge($products_primary, $products_secondary, $products_tertiary));
-        }
-
-        return $variants;
-    }
-
     public function getProducts()
     {
         $categories = [
@@ -137,6 +82,13 @@ class Listing extends Component
             }
         }
 
+        if ($this->filters['availability'] === 'none') {
+            $result = $result->whereHas('variants', fn($query) => $query->where('quantity', '<', 1));
+        } else if ($this->filters['availability'] === 'small') {
+            $result = $result->whereHas('variants', fn($query) => $query->whereBetween('quantity', [1, 10]));
+        } else if ($this->filters['availability'] === 'large') {
+            $result = $result->whereHas('variants', fn($query) => $query->where('quantity', '>=', 10));
+        }
         if ($this->filters['availability']) {
             $result = $result->whereHas('variants', fn($query) => $query->where('quantity', $this->filters['availability'] === 1 ? ">" : "=", 0));
         }

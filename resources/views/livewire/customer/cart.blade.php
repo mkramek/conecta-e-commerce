@@ -18,7 +18,7 @@
             <x-button type="button" href='{{ route("products.$lang") }}'>
                 Powrót do zakupów
             </x-button>
-            <x-button type="submit" primary>
+            <x-button type="submit" primary :disabled="count($items) === 0">
                 Przejdź do podsumowania
             </x-button>
         </div>

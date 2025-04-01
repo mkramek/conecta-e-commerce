@@ -39,6 +39,11 @@ class DeliveryAddress extends Model
         'client_e_commerce_id',
     ];
 
+    public function __toString()
+    {
+        
+    }
+
     public function clientECommerce(): BelongsTo
     {
         return $this->belongsTo(ClientECommerce::class);

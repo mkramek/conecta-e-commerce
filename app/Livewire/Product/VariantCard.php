@@ -8,11 +8,11 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\View\View;
 use Livewire\Component;
-use WireUi\Traits\Actions;
+use WireUi\Traits\WireUiActions;
 
 class VariantCard extends Component
 {
-    use Actions;
+    use WireUiActions;
 
     public ProductVariant $variant;
 

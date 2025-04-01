@@ -7,22 +7,42 @@
                     <livewire:product.categories />
                 </div>
                 <h2 class="text-2xl">{{ __('Filtry') }}</h2>
-                <x-select name="filters_producer" label="{{ __('Producent') }}" id="filters_producer"
-                    wire:model.live="filters.producer" empty-message="{{ __('Brak producentów') }}" class="dark">
+                <x-select
+                    name="filters_producer"
+                    label="{{ __('Producent') }}"
+                    id="filters_producer"
+                    wire:model.live="filters.producer"
+                    empty-message="{{ __('Brak producentów') }}"
+                    class="dark"
+                >
                     @foreach ($producers as $prd)
-                        <x-select.option value="{{ $prd->id }}">{{ $prd->name }}</x-select.option>
+                        <x-select.option value="{{ $prd->name }}">{{ $prd->name }}</x-select.option>
                     @endforeach
                 </x-select>
-                <x-select name="filters_availability" label="{{ __('Dostępność') }}" id="filters_availability"
-                    wire:model.live="filters.availability" class="dark">
-                    <x-select.option value="1">Tak</x-select.option>
-                    <x-select.option value="0">Nie</x-select.option>
+                <x-select
+                    name="filters_availability"
+                    label="{{ __('Dostępność') }}"
+                    id="filters_availability"
+                    wire:model.live="filters.availability"
+                    class="dark"
+                >
+                    <x-select.option value="large">Duża liczba sztuk</x-select.option>
+                    <x-select.option value="small">Mała liczba sztuk</x-select.option>
+                    <x-select.option value="none">Wydłużony czas realizacji</x-select.option>
                 </x-select>
                 <div class="flex gap-4 justify-between items-start dark">
-                    <x-inputs.currency label="Cena od" suffix="PLN"
-                        wire:model.live.debounce.250ms="filters.price_min" />
-                    <x-inputs.currency label="Cena do" suffix="PLN"
-                        wire:model.live.debounce.250ms="filters.price_max" />
+                    <x-input
+                        type="number"
+                        label="Cena od"
+                        suffix="PLN"
+                        wire:model.live.debounce.250ms="filters.price_min"
+                    />
+                    <x-input
+                        type="number"
+                        label="Cena do"
+                        suffix="PLN"
+                        wire:model.live.debounce.250ms="filters.price_max"
+                    />
                 </div>
             </form>
             <div class="mt-4">

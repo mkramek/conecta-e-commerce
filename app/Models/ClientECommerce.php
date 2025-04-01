@@ -44,6 +44,8 @@ class ClientECommerce extends Authenticatable
         'marketing_agreement',
         'symfonia_code',
         'is_b2b',
+        'is_individual',
+        'salesman_id',
     ];
 
     /**
@@ -67,7 +69,17 @@ class ClientECommerce extends Authenticatable
         'rodo_acceptance' => 'boolean',
         'marketing_agreement' => 'boolean',
         'is_b2b' => 'boolean',
+        'is_individual' => 'boolean',
     ];
+
+    protected $appends = [
+        'name',
+    ];
+
+    public function getNameAttribute(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
 
     public function address(): HasOne
     {
@@ -79,13 +91,23 @@ class ClientECommerce extends Authenticatable
         return $this->hasMany(DeliveryAddress::class, 'client_e_commerce_id');
     }
 
-    public function invoiceRegisterAddress(): HasOne
+    public function invoiceRegisterAddresses(): HasMany
     {
-        return $this->hasOne(InvoiceRegisterAddress::class, 'client_e_commerce_id');
+        return $this->hasMany(InvoiceRegisterAddress::class, 'client_e_commerce_id');
     }
 
     public function favorites(): HasMany
     {
         return $this->hasMany(Favorite::class);
+    }
+
+    public function promotions(): HasMany
+    {
+        return $this->hasMany(IndividualPromotion::class, 'customer_id');
+    }
+
+    public function invoiceRegisterAddress()
+    {
+        return $this->invoiceRegisterAddresses->where('is_delivery', false)->first();
     }
 }

@@ -80,6 +80,8 @@ foreach (config('lang.available_languages') as $lang) {
             Route::get('/', ViewProfile::class)->name("profile.$lang");
             Route::get('/orders', Orders::class)->name("orders.$lang");
             Route::get('/b2b', B2B::class)->name("b2b.$lang");
+            Route::get('/b2b/offer/{offer}', B2B\ViewOffer::class)->name("b2b.offer.$lang");
+            Route::get('/b2b/offer/{offer}/counter', B2B\CounterOffer::class)->name("b2b.offer.counter.$lang");
         });
 
         Route::get('/payment/payu', PayU::class)->name("order.payment.payu.$lang");
@@ -93,9 +95,9 @@ foreach (config('lang.available_languages') as $lang) {
         Route::get('/status/ups', \App\Livewire\Customer\Status\UPS::class)->name("order.status.ups.$lang");
         Route::get('/status/fedex', \App\Livewire\Customer\Status\FedEx::class)->name("order.status.fedex.$lang");
 
-        Route::get('password/reset', Email::class)->name("password.request.$lang");
+        Route::get('/password/reset', Email::class)->name("password.request.$lang");
 
-        Route::get('password/reset/{token}', Reset::class)->name("password.reset.$lang");
+        Route::get('/password/reset/{token}', Reset::class)->name("password.reset.$lang");
     });
 
     Route::middleware('auth')->group(function () {

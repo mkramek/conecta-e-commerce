@@ -36,9 +36,13 @@ class Cart extends Component
             $quantity = $item->quantity < 1 ? 1 : $item->quantity;
             if ($item->variant->brutto_discount_price) $this->has_discounts = true;
             if ($with_discounts) {
-                return $acc + $quantity * ($item->variant->brutto_discount_price ?? $item->variant->brutto_price);
+                return $acc + $quantity * ($item->custom_price_gross ?? $item->variant->brutto_discount_price ?? $item->variant->brutto_price);
             }
-            return $acc + $quantity * $item->variant->brutto_price;
+            if ($item->custom_price_gross !== null) {
+                return $acc + $quantity * $item->custom_price_gross;
+            } else {
+                return $acc + $quantity * $item->variant->brutto_price;
+            }
         }, 0.0);
         return $total;
     }
@@ -64,6 +68,7 @@ class Cart extends Component
     public function refetch(): void
     {
         $this->items = $this->getItems();
+        $this->total_brutto = $this->getTotal();
     }
 
     public function checkout(): Redirector|RedirectResponse

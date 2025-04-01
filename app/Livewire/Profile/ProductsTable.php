@@ -20,7 +20,7 @@ final class ProductsTable extends PowerGridComponent
 
     public function datasource(): ?Collection
     {
-        return ProductVariant::all();
+        return ProductVariant::whereNotNull('slug_pl')->get();
     }
 
     public function setUp(): array
@@ -28,9 +28,6 @@ final class ProductsTable extends PowerGridComponent
         $this->showCheckBox();
 
         return [
-            // Exportable::make('export')
-            //     ->striped()
-            //     ->type(Exportable::TYPE_XLS, Exportable::TYPE_CSV),
             Header::make()->showSearchInput(),
             Footer::make()
                 ->showPerPage()

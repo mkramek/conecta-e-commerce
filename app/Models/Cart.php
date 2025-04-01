@@ -12,6 +12,8 @@ class Cart extends Model
         'variant_id',
         'quantity',
         'is_customizable',
+        'custom_price_net',
+        'custom_price_gross',
     ];
 
     protected $casts = [
@@ -26,5 +28,10 @@ class Cart extends Model
     public function variant()
     {
         return $this->belongsTo(ProductVariant::class);
+    }
+
+    public function hasCustomPromo()
+    {
+        return $this->custom_price_net !== null && $this->custom_price_gross !== null;
     }
 }

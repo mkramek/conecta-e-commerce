@@ -7,11 +7,11 @@ use Error;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Livewire\Component;
-use WireUi\Traits\Actions;
+use WireUi\Traits\WireUiActions;
 
 class SignUp extends Component
 {
-    use Actions;
+    use WireUiActions;
 
     public $email;
 
@@ -29,6 +29,7 @@ class SignUp extends Component
                 'email' => $this->email
             ]);
             if ($nEmail->save()) {
+                $this->email = '';
                 $this->notification()->success(
                     title: __("Sukces"),
                     description: __("Twój adres email został zapisany w naszym newsletterze! Dziękujemy!")

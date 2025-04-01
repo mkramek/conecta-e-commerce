@@ -19,4 +19,12 @@ return [
     'token' => 'Ten token resetowania hasła jest nieprawidłowy.',
     'user' => 'Nie możemy znaleźć użytkownika o tym adresie e-mail.',
 
+    'reset_greeting' => 'Witaj!',
+    'reset_subject' => 'Resetowanie hasła',
+    'reset_line_1' => 'Otrzymujesz tą wiadomość, ponieważ zostało wysłane zgłoszenie zresetowania hasła.',
+    'reset_action' => 'Zresetuj hasło',
+    'reset_line_2' => 'Poniższy link wygaśnie w ciągu :count minut.',
+    'reset_line_3' => 'Jeśli to zgłoszenie nie zostało zgłoszone przez Ciebie, zignoruj tą wiadomość.',
+    'reset_info' => "Jeśli występuje problem z naciśnięciem przycisku \":actionText\", kliknij\nbądź skopiuj i wklej do przeglądarki poniższy link:",
+    'reset_salutation' => 'Pozdrawiamy',
 ];

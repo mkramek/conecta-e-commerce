@@ -1,12 +1,11 @@
-const defaultTheme = require("tailwindcss/defaultTheme");
-const colors = require("tailwindcss/colors");
+import defaultTheme from "tailwindcss/defaultTheme";
+import colors from "tailwindcss/colors";
 
-module.exports = {
+export default {
     presets: [
-		require("./vendor/wireui/wireui/tailwind.config.js"),
-		 require("./vendor/power-components/livewire-powergrid/tailwind.config.js"),
-		 "./vendor/robsontenorio/mary/src/View/Components/**/*.php"
-	],
+        require("./vendor/power-components/livewire-powergrid/tailwind.config.js"),
+        require("./vendor/wireui/wireui/tailwind.config.js"),
+    ],
     darkMode: 'class',
     theme: {
         extend: {
@@ -48,9 +47,10 @@ module.exports = {
         "./resources/**/*.php",
         "./resources/**/*.vue",
         "./resources/**/*.twig",
-        "./vendor/wireui/wireui/resources/**/*.blade.php",
+        "./vendor/wireui/wireui/src/*.php",
         "./vendor/wireui/wireui/ts/**/*.ts",
-        "./vendor/wireui/wireui/src/View/**/*.php",
+        "./vendor/wireui/wireui/src/WireUi/**/*.php",
+        "./vendor/wireui/wireui/src/Components/**/*.php",
         "./vendor/wireui/breadcrumbs/src/Components/**/*.php",
         "./vendor/wireui/breadcrumbs/src/views/**/*.blade.php",
         "./node_modules/tw-elements/js/**/*.js",
@@ -58,9 +58,8 @@ module.exports = {
         "./vendor/power-components/livewire-powergrid/src/Themes/Tailwind.php",
     ],
     plugins: [
-		require("@tailwindcss/forms"),
-		require("@tailwindcss/typography"),
-		require("tw-elements/plugin.cjs"),
-		require("daisyui")
-	],
+        require("@tailwindcss/forms"),
+        require("@tailwindcss/typography"),
+        require("tw-elements/plugin.cjs"),
+    ],
 };

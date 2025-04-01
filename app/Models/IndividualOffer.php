@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class IndividualOffer extends Model
 {
@@ -20,9 +22,14 @@ class IndividualOffer extends Model
         'offerer',
     ];
 
-    public function parentOffer()
+    public function parentOffer(): BelongsTo
     {
         return $this->belongsTo(IndividualOffer::class, 'parent_id', 'id');
+    }
+
+    public function childOffer(): HasOne
+    {
+        return $this->hasOne(IndividualOffer::class, 'parent_id', 'id');
     }
 
     public function customer()

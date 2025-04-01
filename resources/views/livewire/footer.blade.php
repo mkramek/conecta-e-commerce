@@ -8,7 +8,7 @@
         <div class="text-left">
             @if ($footer)
                 <p>
-                    <x-icon name="location-marker" class="h-4 inline" />
+                    <x-icon name="map-pin" class="h-4 inline" />
                     {{ $footer->company_name }}<br>
                     {{ __('main.st') }}
                     <b>{{ $footer->street }} {{ $footer->house_number }} {{ $footer->apartment_number }}</b>
@@ -27,7 +27,7 @@
                     @if ($footer->fax)
                         fax. <b>{{ $footer->fax }}</b> <i class="fa-solid fa-fax"></i><br>
                     @endif
-                    <x-icon name="mail" class="h-4 inline" />
+                    <x-icon name="envelope" class="h-4 inline" />
                     <b>{{ $footer->email }} <i class="fa-solid fa-envelope"></i></b>
                 </p>
             @else

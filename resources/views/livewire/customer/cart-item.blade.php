@@ -23,13 +23,17 @@
     </div>
     <div class="basis-1/6 p-2">
         <p class="font-bold flex">
-            <span>{{ number_format($item->variant->brutto_price, 2) }}</span>
+            <span>{{ number_format($item->custom_price_gross ?? $item->variant->brutto_price, 2) }}</span>
             <span>PLN/szt</span>
         </p>
     </div>
     <div class="basis-1/6 p-2">
-        <x-inputs.number min="0" step="{{ $item->variant->product->step }}" wire:model.live="item.quantity"
+        @if ($item->custom_price_gross)
+        <x-input :value="$item->quantity" disabled description="Ilość w ofercie" />
+        @else
+        <x-input type="number" min="0" step="{{ $item->variant->product->step }}" wire:model.live="item.quantity"
             :value="$item->quantity" />
+        @endif
     </div>
     <div class="basis-1/6 p-2">
         <p class="{{ $discount_subtotal ? 'line-through text-red-700' : 'font-bold' }} flex">

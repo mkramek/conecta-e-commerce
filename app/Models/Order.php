@@ -29,19 +29,24 @@ class Order extends Model
         'invoice_address_id',
         'delivery_address_id',
         'invoice_delivery_address_id',
+        'synchronized',
     ];
 
-    public function invoiceAddress(): BelongsTo
-    {
-        return $this->belongsTo(InvoiceRegisterAddress::class, 'invoice_address_id');
-    }
+    protected $casts = [
+        'synchronized' => 'boolean',
+    ];
 
-    public function deliveryAddress(): BelongsTo
+    public function deliveryAddress()
     {
         return $this->belongsTo(DeliveryAddress::class, 'delivery_address_id');
     }
 
-    public function invoiceDeliveryAddress(): BelongsTo
+    public function invoiceAddress()
+    {
+        return $this->belongsTo(InvoiceRegisterAddress::class, 'invoice_address_id');
+    }
+
+    public function invoiceDeliveryAddress()
     {
         return $this->belongsTo(InvoiceRegisterAddress::class, 'invoice_delivery_address_id');
     }

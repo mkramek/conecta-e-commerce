@@ -16,12 +16,10 @@ class OrderItem extends Model
         'has_discount',
         'total_discount_net',
         'total_discount_gross',
-        'is_customizable',
     ];
 
     protected $casts = [
         'has_discounts' => 'boolean',
-        'is_customizable' => 'boolean',
     ];
 
     public function variant(): BelongsTo

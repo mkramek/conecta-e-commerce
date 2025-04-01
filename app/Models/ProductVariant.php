@@ -70,6 +70,14 @@ class ProductVariant extends Model
         'has_new_price_from_sync' => 'boolean',
     ];
 
+    protected $appends = [
+        'name'
+    ];
+
+    public function getNameAttribute() {
+        return $this->name_pl;
+    }
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
@@ -108,10 +116,5 @@ class ProductVariant extends Model
     public function priceHistory(): HasMany
     {
         return $this->hasMany(PriceHistory::class, 'product_variant_id');
-    }
-
-    public function productVariantColor(): BelongsTo
-    {
-        return $this->belongsTo(Color::class, 'color', 'name');
     }
 }

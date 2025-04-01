@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Cart;
 use App\Models\Product;
+use App\Models\SeoConfiguration;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\View\View;
 use Livewire\Component;
@@ -28,8 +29,21 @@ class Header extends Component
 
     public Collection $searchResults;
 
+    public string $meta_title = "";
+
+    public string $meta_desc = "";
+
+    public string $meta_author = "";
+
+    public string $meta_keywords = "";
+
     public function mount(): void
     {
+        $seo = SeoConfiguration::where('lang', app()->getLocale())->first();
+        $this->meta_title = $seo->meta_title;
+        $this->meta_desc = $seo->meta_description_content;
+        $this->meta_author = $seo->meta_author;
+        $this->meta_keywords = $seo->meta_keywords;
         $this->searchResults = new Collection();
         $this->route = json_encode(request()->segments());
         $this->lang = app()->getLocale();

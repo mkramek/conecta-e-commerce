@@ -43,4 +43,9 @@ class InvoiceRegisterAddress extends Model
     {
         return $this->belongsTo(ClientECommerce::class);
     }
+
+    public function __toString()
+    {
+        return "$this->street $this->house_number | $this->apartment_number\n $this->postal_code, $this->city";
+    }
 }

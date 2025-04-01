@@ -15,19 +15,15 @@ use Illuminate\Auth\Events\PasswordReset;
 
 class Reset extends Component
 {
-    public $lang;
+    public string $lang;
 
-    /** @var string */
-    public $token;
+    public string $token;
 
-    /** @var string */
-    public $email;
+    public string $email;
 
-    /** @var string */
-    public $password;
+    public string $password;
 
-    /** @var string */
-    public $passwordConfirmation;
+    public string $passwordConfirmation;
 
     public function mount($token): void
     {

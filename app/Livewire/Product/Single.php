@@ -7,7 +7,6 @@ use App\Models\Color;
 use App\Models\Favorite;
 use App\Models\PriceHistory;
 use App\Models\Product;
-use App\Models\ProductImage;
 use App\Models\ProductMetaData;
 use App\Models\ProductVariant;
 use App\Models\Size;
@@ -19,11 +18,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Livewire\Attributes\Url;
 use Livewire\Component;
-use WireUi\Traits\Actions;
+use WireUi\Traits\WireUiActions;
 
 class Single extends Component
 {
-    use Actions;
+    use WireUiActions;
 
     #[Url]
     public $variant;
@@ -81,10 +80,7 @@ class Single extends Component
             ->whereHas('thirdLevelCategories', null, '>=', 0)
             ->limit(8)
             ->get();
-    }
 
-    public function render(): View
-    {
         if (intval($this->variant) > 0) {
             $this->selected = $this->product->variants->find($this->variant);
         } else {
@@ -108,6 +104,10 @@ class Single extends Component
         } else {
             $this->images = $this->product->images()->orderBy('display_position', 'asc')->get();
         }
+    }
+
+    public function render(): View
+    {
         return view('livewire.product.single');
     }
 
@@ -118,11 +118,12 @@ class Single extends Component
                 title: __('Błąd'),
                 description: __('Wybrano zbyt niską ilość przedmiotu'),
             );
+            return;
         } else {
             try {
                 Cart::upsert([
                     [
-                        'variant_id' => $this->variant,
+                        'variant_id' => $this->variant ?? $this->product->variants->first()->id,
                         'product_id' => $this->product->id,
                         'customer_id' => auth()->id() ?? session()->getId(),
                         'quantity' => $this->quantity,

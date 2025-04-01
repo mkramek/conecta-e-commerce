@@ -9,15 +9,14 @@ use App\Models\Favorite;
 use App\Models\InvoiceRegisterAddress;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Livewire\Component;
-use WireUi\Traits\Actions;
+use WireUi\Traits\WireUiActions;
 
 class ViewProfile extends Component
 {
-    use Actions;
+    use WireUiActions;
 
     public ?string $expanded = null;
 
@@ -31,9 +30,13 @@ class ViewProfile extends Component
 
     public ?InvoiceRegisterAddress $invAddress;
 
+    public ?InvoiceRegisterAddress $invDelAddress;
+
     public ?DeliveryAddress $delAddress;
 
     public ?Address $address;
+
+    public ?string $address_tab = null;
 
     public array $addressForm = [
         'city' => '',
@@ -67,6 +70,18 @@ class ViewProfile extends Component
         'country' => '',
     ];
 
+    public array $invDelAddressForm = [
+        'company_name' => '',
+        'nip' => '',
+        'city' => '',
+        'street' => '',
+        'house_number' => '',
+        'apartment_number' => '',
+        'postal_code' => '',
+        'province' => '',
+        'country' => '',
+    ];
+
     public bool $is_business = false;
 
     public bool $addressUpdateModal = false;
@@ -85,12 +100,18 @@ class ViewProfile extends Component
     public function mount(): void
     {
         $this->customer = ClientECommerce::find(auth()->id());
-        $this->invAddress = $this->customer->invoiceRegisterAddress;
+        $this->invAddress = $this->customer->invoiceRegisterAddress();
+        $this->invDelAddress = $this->customer->invoiceRegisterAddresses->where('is_delivery', true)->first();
         $this->delAddress = $this->customer->deliveryAddresses()->first();
         $this->address = $this->customer->address;
         if ($this->invAddress) {
             $this->invAddressForm = [
                 ...$this->invAddress->getAttributes(),
+            ];
+        }
+        if ($this->invDelAddress) {
+            $this->invDelAddressForm = [
+                ...$this->invDelAddress->getAttributes(),
             ];
         }
         if ($this->delAddress) {
@@ -103,8 +124,8 @@ class ViewProfile extends Component
                 ...$this->address->getAttributes(),
             ];
         }
-        $customer = ClientECommerce::where('id', auth()->id())->has('invoiceRegisterAddress')->first();
-        $this->is_business = (bool) $customer;
+        $customer = ClientECommerce::find(auth()->id());
+        $this->is_business = (bool) $customer->is_b2b;
         $this->lang = app()->getLocale();
         $this->orders = Order::where('user_id', auth()->id())->get();
         $this->favorites = Favorite::where('customer_id', auth()->id())->has('variant')->get();
@@ -173,11 +194,30 @@ class ViewProfile extends Component
     public function setInvAddress()
     {
         try {
-            if (! $this->customer->invoiceRegisterAddress) {
-                $invAddress = new InvoiceRegisterAddress([...$this->invAddressForm, 'client_e_commerce_id' => auth()->id()]);
+            if (! $this->customer->invoiceRegisterAddress()) {
+                $invAddress = new InvoiceRegisterAddress([...$this->invAddressForm, 'client_e_commerce_id' => auth()->id(), 'is_delivery' => false]);
                 $invAddress->save();
             } else {
-                $this->customer->invoiceRegisterAddress->update($this->invAddressForm);
+                $this->customer->invoiceRegisterAddress()->update($this->invAddressForm);
+            }
+            $this->addressUpdateModal = true;
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            $this->addressErrorModal = true;
+        }
+    }
+
+    public function setInvDelAddress()
+    {
+        try {
+            if (! $this->customer->invoiceRegisterAddresses->where('is_delivery', true)->first()) {
+                InvoiceRegisterAddress::create([
+                    ...$this->invAddressForm,
+                    'client_e_commerce_id' => auth()->id(),
+                    'is_delivery' => true,
+                ]);
+            } else {
+                $this->customer->invoiceRegisterAddresses->where('is_delivery', true)->first()->update($this->invDelAddressForm);
             }
             $this->addressUpdateModal = true;
         } catch (\Exception $e) {
@@ -196,5 +236,10 @@ class ViewProfile extends Component
     {
         auth()->logout();
         return redirect()->route("home.{$this->lang}");
+    }
+
+    public function setAddressTab(string $tab)
+    {
+        $this->address_tab = $tab;
     }
 }
