@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\ProductMetaData;
 use App\Models\ProductVariant;
 use App\Models\Size;
+use App\Models\SizeGroup;
 use Carbon\Carbon;
 use Error;
 use Illuminate\Database\Eloquent\Collection;
@@ -17,6 +18,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Livewire\Attributes\Url;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 use WireUi\Traits\WireUiActions;
 
@@ -35,7 +37,7 @@ class Single extends Component
 
     public $lang;
 
-    public $quantity = 0;
+    public $quantity = 1;
 
     public $max_in_stock;
 
@@ -69,7 +71,7 @@ class Single extends Component
             ->orderBy('size')
             ->get();
         $this->availableColors = Color::whereIn('name', ProductVariant::where('product_id', $this->product->id)->pluck('color'))->get();
-        $this->availableSizes = Size::whereIn('size_value', ProductVariant::where('product_id', $this->product->id)->pluck('size'))->get();
+        $this->availableSizes = $this->getSizesForProduct($this->product);
         $this->meta = ProductMetaData::where(['product_id' => $this->product->id])->first();
         $this->similar = Product::with('firstLevelCategories', 'secondLevelCategories', 'thirdLevelCategories')
             ->whereNotNull("slug_{$this->lang}")
@@ -106,19 +108,44 @@ class Single extends Component
         }
     }
 
+    public function getSizesForProduct(Product $product)
+    {
+        $variantsSizes = $this->product->variants()->pluck('size');
+        $group = null;
+        $thirds = $product->thirdLevelCategories;
+        $seconds = $product->secondLevelCategories;
+        $firsts = $product->secondLevelCategories;
+        if ($thirds->count() > 0 && $group === null) {
+            $group = $thirds[0]->sizeGroup;
+        } else if ($seconds->count() > 0 && $group === null) {
+            $group = $seconds[0]->sizeGroup;
+        } else if ($firsts->count() > 0 && $group === null) {
+            $group = $firsts[0]->sizeGroup;
+        }
+
+        if ($group !== null) {
+            return $group->sizes()->whereIn('size_value', $variantsSizes)->get();
+        }
+
+        $groups = SizeGroup::whereHas('sizes', fn ($q) => $q->whereIn('size_value', $variantsSizes))->get();
+
+        $group = $groups->filter(fn ($g) => $g->sizes->count() >= count($variantsSizes))[0];
+
+        return $group->sizes()->whereIn('size_value', $variantsSizes)->get();
+    }
+
     public function render(): View
     {
         return view('livewire.product.single');
     }
 
-    public function send(): void
+    public function addToCart(): void
     {
         if ($this->quantity === 0) {
             $this->notification()->warning(
                 title: __('Błąd'),
                 description: __('Wybrano zbyt niską ilość przedmiotu'),
             );
-            return;
         } else {
             try {
                 Cart::upsert([

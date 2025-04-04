@@ -54,7 +54,7 @@
         </div>
         <div class="basis-full lg:basis-2/3 xl:basis-3/4 flex flex-wrap justify-center gap-4 w-full py-4">
             @foreach ($products as $product)
-                <livewire:product.variant-card wire:key="{{ $product->id }}" :$product />
+                <livewire:product.variant-card :key="$product->id" :$product />
             @endforeach
             <div class="w-full px-8">
                 {{ $products->onEachSide(0)->links() }}

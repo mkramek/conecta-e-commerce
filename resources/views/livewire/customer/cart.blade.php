@@ -5,7 +5,7 @@
     </div>
     <div class="flex flex-col gap-4">
         @foreach ($items as $item)
-            <livewire:customer.cart-item wire:key="{{ $item->id }}" :item="$item" />
+            <livewire:customer.cart-item :key="$item->id" :item="$item" />
         @endforeach
     </div>
     <div class="text-right mt-4">

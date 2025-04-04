@@ -27,7 +27,7 @@
                 <div class="swiper-wrapper">
                     @foreach ($images as $image)
                         <div wire:key="{{ $image->url }}" class="swiper-slide">
-                            <img src="{{ $image->url }}" alt="{{ $product->$name_column }}" />
+                            <img class="mx-auto" src="{{ $image->url }}" alt="{{ $product->$name_column }}" />
                         </div>
                     @endforeach
                 </div>
@@ -47,7 +47,7 @@
                             <div class="swiper-wrapper">
                                 @foreach ($similar as $similarItem)
                                     <div wire:key="{{ $similarItem->id }}" class="swiper-slide">
-                                        <livewire:product.variant-card :product="$similarItem" />
+                                        <livewire:product.variant-card :key="$similarItem->id" :product="$similarItem" />
                                     </div>
                                 @endforeach
                             </div>
@@ -107,9 +107,9 @@
                                     $label = $color->name === 'BRAK' ? 'Bez koloru' : $color->name;
                                 @endphp
                                 <x-select.option
-                                    wire:key="{{ $color->id }}"
+                                    :key="$color->id"
                                     :disabled="$color->name === $color_id"
-                                    :$label
+                                    :label="$label"
                                     :value="$color->name"
                                 />
                             @endforeach
@@ -132,7 +132,7 @@
                                     $label = $size->size_value === 0 ? 'Bez rozmiaru' : $size->size_value;
                                 @endphp
                                 <x-select.option
-                                    wire:key="{{ $size->size_value }}"
+                                    :key="$size->size_value"
                                     :disabled="$size->size_value === $size_id"
                                     :$label
                                     :value="$size->size_value"
@@ -141,10 +141,12 @@
                         </x-select>
                     </div>
                 @endif
-                <form wire:submit.prevent="send">
+                <form wire:submit="addToCart">
+                    <label for="product-variant-quantity-select" class="mb-1 text-white text-sm">Ilość</label>
                     <x-input
+                        id="product-variant-quantity-select"
                         type="number"
-                        min="0"
+                        min="1"
                         step="{{ $product->step }}"
                         wire:model="quantity"
                     />

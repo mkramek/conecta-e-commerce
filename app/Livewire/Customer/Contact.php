@@ -2,26 +2,37 @@
 
 namespace App\Livewire\Customer;
 
-use App\Notifications\QuestionClientNotification;
 use Illuminate\Mail\Mailable;
-use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use WireUi\Traits\WireUiActions;
+use \App\Models\Footer as FooterModel;
 
 class Contact extends Component
 {
     use WireUiActions;
 
-    public $contact = [
+    public FooterModel $contact;
+
+    public $contactForm = [
         'name' => '',
         'email' => '',
         'phone' => '',
         'message' => '',
     ];
 
+    public function rules()
+    {
+        return [
+            'contactForm.name' => 'string',
+            'contactForm.email' => 'string|email',
+            'contactForm.phone' => 'string',
+            'contactForm.message' => 'string',
+        ];
+    }
+
     public function mount()
     {
-        $this->contact = \App\Models\Footer::first();
+        $this->contact = FooterModel::first();
     }
 
     public function render()
@@ -32,6 +43,6 @@ class Contact extends Component
     public function handleSubmit()
     {
         $mail = new Mailable();
-        $mail->to($this->contact['email'])->subject("Dziękujemy za wysłanie zapytania!")->text();
+        $mail->to($this->contactForm['email'])->subject("Dziękujemy za wysłanie zapytania!")->text("Dziękujemy za wysłanie zapytania! Odpowiemy na nie najszybciej, jak to tylko możliwe.\n\nPozdrawiamy,\nZespół Conecta");
     }
 }

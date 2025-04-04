@@ -65,24 +65,24 @@
                     <x-input
                         label="Imie/ Nazwa firmy"
                         id="contact_name"
-                        wire:model.live="contact.name"
+                        wire:model.live="contactForm.name"
                     />
                     <x-input
                         label="E-mail"
                         id="contact_email"
-                        wire:model.live="contact.email"
+                        wire:model.live="contactForm.email"
                     />
                     <x-input
                         label="Telefon"
                         id="contact_phone"
-                        wire:model.live="contact.phone"
+                        wire:model.live="contactForm.phone"
                     />
                 </div>
                 <div class="basis-1/2">
                     <x-textarea
                         label="Wiadomość"
                         id="contact_message"
-                        wire:model="contact.message"
+                        wire:model="contactForm.message"
                     />
                 </div>
                 <div class="basis-1/4 py-4">
